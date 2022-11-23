@@ -21,11 +21,17 @@ pub fn exc(what: String) -> String {
         }
         Err(error) => {
             let val = String::from_utf8(
-                Command::new("/usr/bin/bash")
+                Command::new("bash")
                     .args(["-c"])
                     .args(what.split_whitespace())
                     .output()
-                    .unwrap()
+                    .unwrap_or(
+                        Command::new("cmd")
+                        .args(["/C"])
+                        .args(what.split_whitespace())
+                        .output()
+                        .expect("error when running code")
+                    )
                     .stdout
             ).unwrap();
             if val == "".to_owned() {
