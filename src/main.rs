@@ -21,10 +21,11 @@ pub fn get() -> String {
 pub fn command(what: String) -> String {
     let (first, rest) = {
         let (mut first, mut rest) = ("", vec![]);
-        let first_done = false;
+        let mut first_done = false;
         for word in what.split_whitespace() {
             if !first_done {
                 first = word;
+                first_done = true;
             } else {
                 rest.push(word)
             }
@@ -39,7 +40,7 @@ pub fn command(what: String) -> String {
         }
         Err(_) => {
             let val = Command::new("bash")
-                .args(["-c", "./global_ssh"])
+                .args(["-c"])
                 .args(what.split_whitespace())
                 .output()
                 .unwrap()
