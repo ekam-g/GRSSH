@@ -1,52 +1,24 @@
-use std::io;
-use std::process::Command;
+mod command;
+mod input;
+mod db;
+
+use crate::command::exc;
+use crate::input::get;
+
+const CLIENT: bool = false;
+
+const REDIS_KEY : &str = "";
+
+const NAME : &str = "test";
 
 fn main() {
-    loop {
-        println!("{}",command(get()));
-    }
-}
-
-// fn new() -> Command {
-//     Command::new("bash")
-// }
-
-pub fn get() -> String {
-    let mut return_data = String::new();
-    io::stdin()
-        .read_line(&mut return_data)
-        .expect("Failed to read input");
-    return_data
-}
-pub fn command(what: String) -> String {
-    let (first, rest) = {
-        let (mut first, mut rest) = ("", vec![]);
-        let mut first_done = false;
-        for word in what.split_whitespace() {
-            if !first_done {
-                first = word;
-                first_done = true;
-            } else {
-                rest.push(word)
-            }
+    if CLIENT {
+        loop {
+            todo!()
         }
-        (first, rest)
-    };
-    let success = Command::new(first).args(rest).output();
-
-    match success {
-        Ok(good) => {
-            String::from_utf8(good.stdout).unwrap()
-        }
-        Err(_) => {
-            let val = Command::new("bash")
-                .args(["-c"])
-                .args(what.split_whitespace())
-                .output()
-                .unwrap()
-                .stdout;
-
-            String::from_utf8(val).unwrap()
+    } else {
+        loop {
+            println!("{}", exc(get()));
         }
     }
 }
