@@ -17,7 +17,7 @@ pub fn client_main() {
 
 fn wait_for_new() -> String {
     loop {
-        let mut data = crate::db::get().unwrap();
+        let data = crate::db::get().unwrap();
         if data.contains("**") {
             return data.replace("**", "");
         }

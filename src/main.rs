@@ -7,7 +7,7 @@ mod client;
 use crate::client::client_main;
 use crate::host::host_main;
 
-const CLIENT: bool = true;
+const CLIENT: bool = false;
 
 const REDIS_KEY: &str = "redis://127.0.0.1:6379";
 
