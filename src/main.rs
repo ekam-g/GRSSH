@@ -4,20 +4,19 @@ mod db;
 mod host;
 mod client;
 
-use crate::command::exc;
+use crate::client::client_main;
 use crate::host::host_main;
-use crate::input::get;
 
-const CLIENT: bool = false;
+const CLIENT: bool = true;
 
-const REDIS_KEY : &str = "";
+const REDIS_KEY: &str = "redis://127.0.0.1:6379";
 
 const NAME : &str = "test";
 
 fn main() {
     if CLIENT {
         loop {
-            todo!()
+            client_main()
         }
     } else {
         loop {

