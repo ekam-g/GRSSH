@@ -1,4 +1,4 @@
-mod get_command_thread;
+pub mod get_command_thread;
 
 use redis::{Client, Commands, Connection, ToRedisArgs};
 use redis::RedisResult;
@@ -8,7 +8,7 @@ fn client() -> RedisResult<Connection> {
     redis.get_connection()
 }
 
-pub fn send(val: &str) -> RedisResult<bool> {
+pub fn send(val: &String) -> RedisResult<bool> {
     let mut client = client()?;
     client.set(&crate::NAME, val)
 }

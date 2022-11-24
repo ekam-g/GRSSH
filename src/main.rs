@@ -1,8 +1,11 @@
 mod command;
 mod input;
 mod db;
+mod host;
+mod client;
 
 use crate::command::exc;
+use crate::host::host_main;
 use crate::input::get;
 
 const CLIENT: bool = false;
@@ -18,7 +21,7 @@ fn main() {
         }
     } else {
         loop {
-            println!("{}", exc(get()));
+            host_main();
         }
     }
 }
