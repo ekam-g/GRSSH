@@ -20,24 +20,31 @@ pub fn exc(what: String) -> String {
             String::from_utf8(good.stdout).unwrap()
         }
         Err(error) => {
-            let val = String::from_utf8(
-                Command::new("bash")
-                    .args(["-c"])
-                    .args(what.split_whitespace())
-                    .output()
-                    .unwrap_or(
-                        Command::new("cmd")
+            let run = {
+                if cfg!(target_os = "linux") {
+                    Command::new("bash")
+                        .args(["-c"])
+                        .args(what.split_whitespace())
+                        .output()
+                } else {
+                    Command::new("cmd")
                         .args(["/C"])
                         .args(what.split_whitespace())
                         .output()
-                        .expect("error when running code")
-                    )
-                    .stdout
-            ).unwrap();
-            if val == "".to_owned() {
-                return error.to_string();
+                }
+            };
+            match run {
+                Ok(data) => {
+                    let good_or_no = String::from_utf8(data.stdout).unwrap();
+                    if good_or_no == "".to_owned() {
+                        return error.to_string();
+                    }
+                    good_or_no
+                }
+                Err(e) => {
+                    e.to_string()
+                }
             }
-            val
         }
     }
 }

@@ -1,9 +1,10 @@
+use std::{thread, time};
 use crate::db::send;
 use crate::input::get;
 
 pub fn client_main() {
     loop {
-        println!("{}", wait_for_new());
+        println!("{}\n-->", wait_for_new());
         let user_input = get();
         let error = send(&format!("&&{}", user_input));
         match error {
@@ -21,5 +22,6 @@ fn wait_for_new() -> String {
         if data.contains("**") {
             return data.replace("**", "");
         }
+        thread::sleep(time::Duration::from_millis(10));
     }
 }
