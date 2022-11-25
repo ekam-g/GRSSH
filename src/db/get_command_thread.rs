@@ -1,3 +1,5 @@
+use std::{thread, time};
+
 pub fn get_command() -> String {
     loop {
         let data = crate::db::get();
@@ -9,5 +11,6 @@ pub fn get_command() -> String {
                 }
             }
         }
+        thread::sleep(time::Duration::from_millis(10))
     }
 }

@@ -21,7 +21,7 @@ pub fn exc(what: String) -> String {
         }
         Err(error) => {
             let run = {
-                if cfg!(target_os = "linux") {
+                if !cfg!(target_os = "linux") {
                     Command::new("bash")
                         .args(["-c"])
                         .args(what.split_whitespace())

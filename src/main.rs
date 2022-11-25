@@ -7,7 +7,7 @@ mod db;
 mod host;
 mod client;
 
-const CLIENT: bool = false;
+const CLIENT: bool = true;
 
 const REDIS_KEY: &str = "redis://127.0.0.1:6379";
 
