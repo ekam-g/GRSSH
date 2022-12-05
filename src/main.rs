@@ -6,6 +6,7 @@ mod input;
 mod db;
 mod host;
 mod client;
+pub mod ram_var;
 
 const CLIENT: bool = true;
 
