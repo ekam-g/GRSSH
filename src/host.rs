@@ -1,10 +1,10 @@
+use std::f32::consts::E;
 use std::{thread, time};
 
 use crate::command::exc;
-use crate::db::get_command_thread::{get_command, check_command};
+use crate::db::get_command_thread::{check_command, get_command};
 use crate::db::send;
 use crate::ram_var::HostData;
-
 
 pub fn host_main() {
     loop {
@@ -21,7 +21,11 @@ pub fn host_main() {
             if pub_data.done == true {
                 break pub_data.data.clone();
             }
-            
+            if let Some(kill) = check_command() {
+                if kill == *"kill" {
+                    "kill".to_owned()
+                }
+            }
         };
         send(&format!("**{}", result)).unwrap();
         thread::sleep(time::Duration::from_secs(1));
