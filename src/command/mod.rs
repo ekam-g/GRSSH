@@ -1,6 +1,6 @@
-use std::process::{Command, Child};
+use std::process::Command;
 
-pub fn exc(what: String) -> Result<Child,String> {
+pub fn exc(what: String) -> String {
     let (first, rest) = {
         let (mut first, mut rest) = ("", vec![]);
         let mut first_done = false;
@@ -14,10 +14,10 @@ pub fn exc(what: String) -> Result<Child,String> {
         }
         (first, rest)
     };
-    let success = Command::new(first).args(rest).spawn();
+    let success = Command::new(first).args(rest).output();
     match success {
         Ok(good) => {
-            Ok(good)
+            String::from_utf8(good.stdout).unwrap()
         }
         Err(error) => {
             let run = {
@@ -25,20 +25,24 @@ pub fn exc(what: String) -> Result<Child,String> {
                     Command::new("bash")
                         .args(["-c"])
                         .args(what.split_whitespace())
-                        .spawn()
+                        .output()
                 } else {
                     Command::new("cmd")
                         .args(["/C"])
                         .args(what.split_whitespace())
-                        .spawn()
+                        .output()
                 }
             };
             match run {
                 Ok(data) => {
-                    Ok(data)
+                    let good_or_no = String::from_utf8(data.stdout).unwrap();
+                    if good_or_no == "".to_owned() {
+                        return error.to_string();
+                    }
+                    good_or_no
                 }
                 Err(e) => {
-                    Err(e.to_string())
+                    e.to_string()
                 }
             }
         }
