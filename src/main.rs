@@ -8,14 +8,13 @@ mod host;
 mod client;
 pub mod ram_var;
 
-const CLIENT: bool = true;
 
-const REDIS_KEY: &str = "redis://127.0.0.1:6379";
+const LOCATION_TO_REDIS_KEY: &str = "/home/ekam/Desktop/code/redis_key";
 
 const NAME: &str = "test";
 
 fn main() {
-    if CLIENT {
+    if input::y_n("y for host, n client") {
         println!("starting client version");
         client_main()
     } else {

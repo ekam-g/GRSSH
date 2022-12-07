@@ -4,14 +4,12 @@ use std::sync::{Mutex, MutexGuard};
 pub struct HostData {
     pub data: String,
     pub kill_thread: bool,
-    pub done:  bool,
 }
 
 pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
     Mutex::new(HostData {
         data: String::new(),
         kill_thread: false,
-        done : false,
     })
 });
 
@@ -26,3 +24,8 @@ impl HostData {
         }
     }
 }
+
+pub static REDIS_KEY: Lazy<String> = Lazy::new(|| {
+    crate::LOCATION_TO_REDIS_KEY;
+    "".to_owned()
+});

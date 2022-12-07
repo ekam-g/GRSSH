@@ -1,4 +1,3 @@
-use std::f32::consts::E;
 use std::{thread, time};
 
 use crate::command::exc;
@@ -13,17 +12,17 @@ pub fn host_main() {
         let thread_worker = thread::spawn(move || {
             let result = exc(data);
             let mut pub_data = HostData::get();
-            pub_data.done = true;
             pub_data.data = result;
         });
         let result: String = loop {
             let pub_data = HostData::get();
-            if pub_data.done == true {
+            if thread_worker.is_finished() {
                 break pub_data.data.clone();
             }
+            drop(pub_data);
             if let Some(kill) = check_command() {
                 if kill == *"kill" {
-                    "kill".to_owned()
+                    break "killed".to_owned()
                 }
             }
         };
@@ -35,6 +34,5 @@ pub fn host_main() {
 fn reset() {
     let mut data = HostData::get();
     data.kill_thread = false;
-    data.done = false;
     data.data = String::new();
 }

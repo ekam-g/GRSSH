@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, fmt::Display};
 
 pub fn get() -> String {
     let mut return_data = String::new();
@@ -7,3 +7,23 @@ pub fn get() -> String {
         .expect("Failed to read input");
     return_data
 }
+
+pub fn y_n(message : impl Display) -> bool {
+    println!("{}", message);
+    loop {
+    let input = get();
+    match input.trim() {
+        "y" => {
+            return true;
+        },
+        "n" => {
+            return false;
+        },
+        _ => {
+            println!("please repond with y or n")
+        },
+    }
+}
+
+}
+
