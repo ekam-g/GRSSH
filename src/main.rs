@@ -9,7 +9,7 @@ mod client;
 pub mod ram_var;
 
 
-const LOCATION_TO_REDIS_KEY: &str = "redis_key";
+const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 
 const NAME: &str = "test";
 
