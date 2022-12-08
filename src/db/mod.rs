@@ -4,7 +4,7 @@ use redis::{Client, Commands, Connection, ToRedisArgs};
 use redis::RedisResult;
 
 fn client() -> RedisResult<Connection> {
-    let redis = Client::open(crate::REDIS_KEY)?;
+    let redis = Client::open(crate::ram_var::REDIS_KEY.to_owned())?;
     redis.get_connection()
 }
 

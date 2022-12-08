@@ -9,7 +9,7 @@ mod client;
 pub mod ram_var;
 
 
-const LOCATION_TO_REDIS_KEY: &str = "/home/ekam/Desktop/code/redis_key";
+const LOCATION_TO_REDIS_KEY: &str = "redis_key";
 
 const NAME: &str = "test";
 

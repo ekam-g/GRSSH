@@ -33,6 +33,7 @@ version = "0.1.0"
 dependencies = [
  "once_cell",
  "redis",
+ "txt_writer",
 ]
 
 [[package]]
@@ -109,6 +110,12 @@ name = "tinyvec_macros"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
+
+[[package]]
+name = "txt_writer"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a7aca18b6cb804bc9778f6f00d4d16046b3cee8e164469aa44dfce5e403be50"
 
 [[package]]
 name = "unicode-bidi"
