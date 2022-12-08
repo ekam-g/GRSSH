@@ -1,6 +1,6 @@
 use once_cell::sync::Lazy;
 use std::sync::{Mutex, MutexGuard};
-
+use txt_writer;
 pub struct HostData {
     pub data: String,
     pub kill_thread: bool,
@@ -26,6 +26,8 @@ impl HostData {
 }
 
 pub static REDIS_KEY: Lazy<String> = Lazy::new(|| {
-    crate::LOCATION_TO_REDIS_KEY;
-    "".to_owned()
+    txt_writer::ReadData {}
+        .read_one(crate::LOCATION_TO_REDIS_KEY)
+        .expect("Please Set Redis Key File like redis_key.txt")
 });
+ 
