@@ -17,6 +17,9 @@ pub fn check_command()-> Option<String> {
                 if let Ok(_) = send {
                     return Some(good.replace("&&", ""));
                 }
+            }else if good.contains("&&") {
+                let mut data = crate::ram_var::HostData::get();
+                data.location = good;
             }
         }
         None

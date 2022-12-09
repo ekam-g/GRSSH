@@ -10,7 +10,7 @@ pub fn host_main() {
         reset();
         let data = get_command();
         let thread_worker = thread::spawn(move || {
-            let result = exc(data);
+            let result = exc(data, );
             let mut pub_data = HostData::get();
             pub_data.data = result;
         });

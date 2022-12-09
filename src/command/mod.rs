@@ -1,6 +1,6 @@
 use std::process::Command;
 
-pub fn exc(what: String) -> String {
+pub fn exc(what: String, file : String) -> String {
     let (first, rest) = {
         let (mut first, mut rest) = ("", vec![]);
         let mut first_done = false;
@@ -14,22 +14,31 @@ pub fn exc(what: String) -> String {
         }
         (first, rest)
     };
-    let success = Command::new(first).args(rest).output();
+    let success = Command::new(first)
+        .args(rest)
+        .current_dir(
+            &file
+        )
+        .output();
     match success {
-        Ok(good) => {
-            String::from_utf8(good.stdout).unwrap()
-        }
+        Ok(good) => String::from_utf8(good.stdout).unwrap(),
         Err(error) => {
             let run = {
                 if !cfg!(target_os = "linux") {
                     Command::new("bash")
                         .args(["-c"])
                         .args(what.split_whitespace())
+                        .current_dir(
+                            &file
+                        )
                         .output()
                 } else {
                     Command::new("cmd")
                         .args(["/C"])
                         .args(what.split_whitespace())
+                        .current_dir(
+                            &file
+                        )
                         .output()
                 }
             };
@@ -41,9 +50,7 @@ pub fn exc(what: String) -> String {
                     }
                     good_or_no
                 }
-                Err(e) => {
-                    e.to_string()
-                }
+                Err(e) => e.to_string(),
             }
         }
     }

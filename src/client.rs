@@ -6,7 +6,13 @@ pub fn client_main() {
     loop {
         println!("{}\n-->", wait_for_new());
         let user_input = get();
-        let error = send(&format!("&&{}", user_input));
+        let error = {
+            if user_input.contains("cd") {
+                send(&format!("%%{}", user_input))
+            } else {
+                send(&format!("&&{}", user_input))
+            }
+        };
         match error {
             Ok(_) => {}
             Err(_) => {
@@ -26,14 +32,14 @@ fn wait_for_new() -> String {
             }
         }
         if time == 120 {
-            if y_n("kill?") {
+            if y_n("kill?(y or n)") {
                 let status = send(&"&&kill".to_owned());
                 match status {
                     Ok(_) => {
                         return "killed".to_owned();
-                    },
+                    }
                     Err(oh_no) => {
-                        println!("{}", oh_no )
+                        println!("{}", oh_no)
                     }
                 }
             }

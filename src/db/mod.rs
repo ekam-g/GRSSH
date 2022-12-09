@@ -1,6 +1,6 @@
 pub mod get_command_thread;
 
-use redis::{Client, Commands, Connection, ToRedisArgs};
+use redis::{Client, Commands, Connection};
 use redis::RedisResult;
 
 fn client() -> RedisResult<Connection> {
@@ -23,9 +23,4 @@ pub fn send(val: &String) -> RedisResult<bool> {
 pub fn get() -> RedisResult<String> {
     let mut client = client()?;
     client.get(&crate::NAME)
-}
-
-pub fn exists<T : ToRedisArgs>(val : T)  -> RedisResult<bool> {
-    let mut client = client()?;
-    client.exists(val)
 }

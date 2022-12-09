@@ -4,7 +4,8 @@ use txt_writer;
 pub struct HostData {
     pub data: String,
     pub kill_thread: bool,
-    pub redis_ket : String,
+    pub redis_ket: String,
+    pub location: String,
 }
 
 pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
@@ -16,8 +17,8 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
     Mutex::new(HostData {
         data: String::new(),
         kill_thread: false,
-        redis_ket : data,
-        
+        redis_ket: data,
+        location: String::new(),
     })
 });
 
