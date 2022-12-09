@@ -4,12 +4,20 @@ use txt_writer;
 pub struct HostData {
     pub data: String,
     pub kill_thread: bool,
+    pub redis_ket : String,
 }
 
 pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
+    let data = txt_writer::ReadData {}
+        .read_one(crate::LOCATION_TO_REDIS_KEY)
+        .expect("Please Set Redis Key File like redis_key.txt")
+        .trim()
+        .to_owned();
     Mutex::new(HostData {
         data: String::new(),
         kill_thread: false,
+        redis_ket : data,
+        
     })
 });
 
@@ -24,10 +32,3 @@ impl HostData {
         }
     }
 }
-
-pub static REDIS_KEY: Lazy<String> = Lazy::new(|| {
-    txt_writer::ReadData {}
-        .read_one(crate::LOCATION_TO_REDIS_KEY)
-        .expect("Please Set Redis Key File like redis_key.txt")
-});
- 

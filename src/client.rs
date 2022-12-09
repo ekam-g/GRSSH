@@ -1,6 +1,6 @@
-use std::{thread, time};
 use crate::db::send;
-use crate::input::get;
+use crate::input::{get, y_n};
+use std::{thread, time};
 
 pub fn client_main() {
     loop {
@@ -17,11 +17,29 @@ pub fn client_main() {
 }
 
 fn wait_for_new() -> String {
+    let mut time: i8 = 0;
     loop {
-        let data = crate::db::get().unwrap();
-        if data.contains("**") {
-            return data.replace("**", "");
+        let data = crate::db::get();
+        if let Ok(command) = data {
+            if command.contains("**") {
+                return command.replace("**", "");
+            }
         }
+        if time == 120 {
+            if y_n("kill?") {
+                let status = send(&"&&kill".to_owned());
+                match status {
+                    Ok(_) => {
+                        return "killed".to_owned();
+                    },
+                    Err(oh_no) => {
+                        println!("{}", oh_no )
+                    }
+                }
+            }
+            time = 0;
+        }
+        time += 1;
         thread::sleep(time::Duration::from_millis(10));
     }
 }
