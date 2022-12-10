@@ -20,7 +20,7 @@ pub fn y_n(message : impl Display) -> bool {
             return false;
         },
         _ => {
-            println!("please repond with y or n")
+            println!("please respond with y or n")
         },
     }
 }

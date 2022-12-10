@@ -15,10 +15,10 @@ pub fn exc(what: String, file : String) -> String {
         (first, rest)
     };
     let success = Command::new(first)
-        .args(rest)
         .current_dir(
             &file
         )
+        .args(rest)
         .output();
     match success {
         Ok(good) => String::from_utf8(good.stdout).unwrap(),
@@ -26,19 +26,19 @@ pub fn exc(what: String, file : String) -> String {
             let run = {
                 if !cfg!(target_os = "linux") {
                     Command::new("bash")
+                        .current_dir(
+                            file
+                        )
                         .args(["-c"])
                         .args(what.split_whitespace())
-                        .current_dir(
-                            &file
-                        )
                         .output()
                 } else {
                     Command::new("cmd")
+                        .current_dir(
+                            file
+                        )
                         .args(["/C"])
                         .args(what.split_whitespace())
-                        .current_dir(
-                            &file
-                        )
                         .output()
                 }
             };

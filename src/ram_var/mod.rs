@@ -30,6 +30,7 @@ impl HostData {
             if let Ok(data) = check {
                 return data;
             }
+            dbg!("problem");
         }
     }
 }

@@ -17,9 +17,15 @@ pub fn check_command()-> Option<String> {
                 if let Ok(_) = send {
                     return Some(good.replace("&&", ""));
                 }
-            }else if good.contains("&&") {
+            }
+            else if good.contains("%%") {
                 let mut data = crate::ram_var::HostData::get();
-                data.location = good;
+                data.location = good
+                    .replace("%%", "")
+                    .replace("cd", "")
+                    .trim()
+                    .to_owned();
+                return Some("ls".to_owned());
             }
         }
         None

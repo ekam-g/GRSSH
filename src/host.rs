@@ -8,9 +8,14 @@ use crate::ram_var::HostData;
 pub fn host_main() {
     loop {
         reset();
-        let data = get_command();
+        let mut data = get_command();
+        if data.contains("dir") {
+            HostData::get().location =  data.clone();
+            data = "ls".to_owned()
+        }
         let thread_worker = thread::spawn(move || {
-            let result = exc(data, );
+            let dir = HostData::get().location.clone();
+            let result = exc(data, dir);
             let mut pub_data = HostData::get();
             pub_data.data = result;
         });
@@ -22,7 +27,7 @@ pub fn host_main() {
             drop(pub_data);
             if let Some(kill) = check_command() {
                 if kill == *"kill" {
-                    break "killed".to_owned()
+                    break "killed".to_owned();
                 }
             }
         };
@@ -33,6 +38,5 @@ pub fn host_main() {
 
 fn reset() {
     let mut data = HostData::get();
-    data.kill_thread = false;
     data.data = String::new();
 }

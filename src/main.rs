@@ -1,3 +1,4 @@
+
 use crate::client::client_main;
 use crate::host::host_main;
 
@@ -15,10 +16,11 @@ const NAME: &str = "test";
 
 fn main() {
     if input::y_n("y for client, n host") {
-         println!("starting client version");
+        println!("starting client version");
         client_main()
     } else {
         println!("starting host version");
         host_main();
     }
+
 }
