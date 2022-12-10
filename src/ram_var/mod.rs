@@ -6,6 +6,7 @@ pub struct HostData {
     pub kill_thread: bool,
     pub redis_ket: String,
     pub location: String,
+    pub  last_working_location: String,
 }
 
 pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
@@ -19,6 +20,7 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
         kill_thread: false,
         redis_ket: data,
         location: String::new(),
+        last_working_location : String::new(),
     })
 });
 

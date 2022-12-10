@@ -1,6 +1,9 @@
+use std::fs;
 use std::process::Command;
 
-pub fn exc(what: String, file : String) -> String {
+use crate::ram_var::HostData;
+
+pub fn exc(what: String) -> String {
     let (first, rest) = {
         let (mut first, mut rest) = ("", vec![]);
         let mut first_done = false;
@@ -14,6 +17,13 @@ pub fn exc(what: String, file : String) -> String {
         }
         (first, rest)
     };
+    let file: String = {
+        let mut path = HostData::get();
+        if fs::read_dir(&path.location).is_err() {
+            path.location = path.last_working_location.clone();
+        }
+        path.location.clone()
+    };
     let success = Command::new(first)
         .current_dir(
             &file
@@ -21,7 +31,10 @@ pub fn exc(what: String, file : String) -> String {
         .args(rest)
         .output();
     match success {
-        Ok(good) => String::from_utf8(good.stdout).unwrap(),
+        Ok(good) => {
+            update();
+            String::from_utf8(good.stdout).unwrap()
+        }
         Err(error) => {
             let run = {
                 if !cfg!(target_os = "linux") {
@@ -48,10 +61,24 @@ pub fn exc(what: String, file : String) -> String {
                     if good_or_no == "".to_owned() {
                         return error.to_string();
                     }
+                    update();
                     good_or_no
                 }
-                Err(e) => e.to_string(),
+                Err(e) => {
+                    fix();
+                    e.to_string()
+                }
             }
         }
     }
+}
+
+fn update() {
+    let mut fix = HostData::get();
+    fix.last_working_location = fix.location.clone();
+}
+
+fn fix() {
+    let mut fix = HostData::get();
+    fix.location = fix.last_working_location.clone();
 }

@@ -1,6 +1,7 @@
+use std::{thread, time};
+
 use crate::db::send;
 use crate::input::{get, y_n};
-use std::{thread, time};
 
 pub fn client_main() {
     loop {
@@ -24,6 +25,7 @@ pub fn client_main() {
 
 fn wait_for_new() -> String {
     let mut time: i8 = 0;
+    let mut dead_server: bool = false;
     loop {
         let data = crate::db::get();
         if let Ok(command) = data {
@@ -32,11 +34,15 @@ fn wait_for_new() -> String {
             }
         }
         if time == 120 {
-            if y_n("kill?(y or n)") {
+            if dead_server == true {
+                println!("host pc might be dead or not responding, waiting.........")
+            } else if y_n("Command kill?(y or n)") {
                 let status = send(&"&&kill".to_owned());
                 match status {
                     Ok(_) => {
-                        return "killed".to_owned();
+                        println!("killing......");
+                        dead_server = true;
+                        time = 0;
                     }
                     Err(oh_no) => {
                         println!("{}", oh_no)
