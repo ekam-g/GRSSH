@@ -24,12 +24,7 @@ pub fn exc(what: String) -> String {
         }
         path.location.clone()
     };
-    let success = Command::new(first)
-        .current_dir(
-            &file
-        )
-        .args(rest)
-        .output();
+    let success = Command::new(first).current_dir(&file).args(rest).output();
     match success {
         Ok(good) => {
             update();
@@ -39,17 +34,13 @@ pub fn exc(what: String) -> String {
             let run = {
                 if !cfg!(target_os = "linux") {
                     Command::new("bash")
-                        .current_dir(
-                            file
-                        )
+                        .current_dir(file)
                         .args(["-c"])
                         .args(what.split_whitespace())
                         .output()
                 } else {
                     Command::new("cmd")
-                        .current_dir(
-                            file
-                        )
+                        .current_dir(file)
                         .args(["/C"])
                         .args(what.split_whitespace())
                         .output()
