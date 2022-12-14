@@ -34,7 +34,7 @@ fn wait_for_new() -> String {
             }
         }
         if time == 120 {
-            if dead_server  {
+            if dead_server {
                 println!("host pc might be dead or not responding, waiting.........")
             } else if y_n("Command kill?(y or n)") {
                 let status = send(&"&&kill".to_owned());

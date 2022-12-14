@@ -1,4 +1,4 @@
-use std::{io, fmt::Display};
+use std::{fmt::Display, io};
 
 pub fn get() -> String {
     let mut return_data = String::new();
@@ -8,22 +8,20 @@ pub fn get() -> String {
     return_data
 }
 
-pub fn y_n(message : impl Display) -> bool {
+pub fn y_n(message: impl Display) -> bool {
     println!("{}", message);
     loop {
-    let input = get();
-    match input.trim() {
-        "y" => {
-            return true;
-        },
-        "n" => {
-            return false;
-        },
-        _ => {
-            println!("please respond with y or n")
-        },
+        let input = get();
+        match input.trim() {
+            "y" => {
+                return true;
+            }
+            "n" => {
+                return false;
+            }
+            _ => {
+                println!("please respond with y or n")
+            }
+        }
     }
 }
-
-}
-
