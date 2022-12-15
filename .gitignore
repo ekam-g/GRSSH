@@ -1,2 +1,4 @@
-/target
-redis_key.txt
+/client/target
+/host/target
+/client/redis_key.txt
+/host/redis_key.txt
