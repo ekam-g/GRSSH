@@ -34,14 +34,22 @@ pub fn exc(what: String) -> String {
         }
         Err(error) => {
             let run = {
-                if !cfg!(target_os = "linux") {
-                    Command::new("bash")
-                        .current_dir(file)
-                        .args(["-c"])
-                        .args(what.split_whitespace())
-                        .output()
+                if crate::LOCATION_TO_SHELL.is_empty() {
+                    if !cfg!(target_os = "linux") {
+                        Command::new("bash")
+                            .current_dir(file)
+                            .args(["-c"])
+                            .args(what.split_whitespace())
+                            .output()
+                    } else {
+                        Command::new("cmd")
+                            .current_dir(file)
+                            .args(["/C"])
+                            .args(what.split_whitespace())
+                            .output()
+                    }
                 } else {
-                    Command::new("cmd")
+                    Command::new(crate::LOCATION_TO_SHELL)
                         .current_dir(file)
                         .args(["/C"])
                         .args(what.split_whitespace())
