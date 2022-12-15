@@ -24,7 +24,9 @@ pub fn exc(what: String) -> String {
         }
         path.location.clone()
     };
-    let success = Command::new(first).current_dir(&file).args(rest).output();
+    let success = Command::new(first).current_dir(&file)
+        .args(rest)
+        .output();
     match success {
         Ok(good) => {
             update();

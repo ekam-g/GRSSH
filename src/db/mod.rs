@@ -1,10 +1,13 @@
 pub mod get_command_thread;
 
-use redis::RedisResult;
+use redis::{IntoConnectionInfo, RedisResult};
 use redis::{Client, Commands, Connection};
 
-fn client() -> RedisResult<Connection> {
-    let redis = Client::open(crate::ram_var::HostData::get().redis_ket.clone())?;
+pub fn client() -> RedisResult<Connection> {
+    try_client(crate::ram_var::HostData::get().redis_key.clone())
+}
+pub fn try_client<T : IntoConnectionInfo>(redis_key : T) -> RedisResult<Connection> {
+    let redis = Client::open(redis_key)?;
     redis.get_connection()
 }
 
