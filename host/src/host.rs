@@ -9,6 +9,7 @@ pub fn host_main() {
     loop {
         reset();
         let data = get_command();
+        dbg!("dsgdfghgf");
         let thread_worker = thread::spawn(move || {
             let result = exc(data);
             let mut pub_data = HostData::get();

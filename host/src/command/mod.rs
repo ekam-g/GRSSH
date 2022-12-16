@@ -5,6 +5,7 @@ use crate::db::send_path;
 use crate::ram_var::HostData;
 
 pub fn exc(what: String) -> String {
+    dbg!("trying command");
     let (first, rest) = {
         let (mut first, mut rest) = ("", vec![]);
         let mut first_done = false;
@@ -21,8 +22,10 @@ pub fn exc(what: String) -> String {
     let file: String = {
         let mut path = HostData::get();
         if fs::read_dir(&path.location).is_err() {
+            dbg!("problem");
             path.location = path.last_working_location.clone();
         }
+        dbg!("problem");
         path.location.clone()
     };
     let success = Command::new(first).current_dir(&file)

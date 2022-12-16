@@ -11,6 +11,7 @@ pub fn get_command() -> String {
 
 pub fn check_command() -> Option<String> {
     let data = crate::db::get();
+    dbg!("working");
     if let Ok(good) = data {
         if good != *"read" && good.contains("&&") {
             let send = crate::db::send(&"read".to_owned());
@@ -18,9 +19,21 @@ pub fn check_command() -> Option<String> {
                 return Some(good.replace("&&", ""));
             }
         } else if good.contains("%%") {
+            dbg!("Somthdsgas");
+
             let mut data = crate::ram_var::HostData::get();
-            data.location = good.replace("%%", "").replace("cd", "").trim().to_owned();
-            return Some("ls".to_owned());
+            dbg!("Somthdsgas");
+
+            let send = crate::db::send(&"read".to_owned());
+            dbg!("Somthdsgas");
+
+            if send.is_ok() {
+                dbg!("Somthdsgas");
+
+                data.location = good.replace("%%", "").replace("cd", "").trim().to_owned();
+                dbg!("Somthdsgas");
+                return Some("ls".to_owned());
+            }
         }
     }
     None
