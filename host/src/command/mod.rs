@@ -1,5 +1,6 @@
 use std::fs;
 use std::process::Command;
+use crate::db::send_path;
 
 use crate::ram_var::HostData;
 
@@ -34,7 +35,7 @@ pub fn exc(what: String) -> String {
         }
         Err(error) => {
             let run = {
-                if crate::LOCATION_TO_SHELL.is_empty() {
+                if crate::SHELL.is_empty() {
                     if !cfg!(target_os = "linux") {
                         Command::new("bash")
                             .current_dir(file)
@@ -49,7 +50,7 @@ pub fn exc(what: String) -> String {
                             .output()
                     }
                 } else {
-                    Command::new(crate::LOCATION_TO_SHELL)
+                    Command::new(crate::SHELL)
                         .current_dir(file)
                         .args(["/C"])
                         .args(what.split_whitespace())
@@ -76,7 +77,9 @@ pub fn exc(what: String) -> String {
 
 fn update() {
     let mut fix = HostData::get();
-    fix.last_working_location = fix.location.clone();
+    let new = fix.location.clone();
+    fix.last_working_location = new.clone();
+    send_path(new).unwrap();
 }
 
 fn fix() {

@@ -6,8 +6,6 @@ use crate::db::send;
 use crate::ram_var::HostData;
 
 pub fn host_main() {
-    send(&"**Server Started, Please cd into your root folder".to_owned())
-        .expect("error when connecting with redis");
     loop {
         reset();
         let data = get_command();

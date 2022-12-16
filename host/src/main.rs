@@ -1,11 +1,12 @@
 use crate::host::host_main;
+use crate::ram_var::HostData;
 
 mod command;
 mod db;
 mod host;
 pub mod ram_var;
 
-const LOCATION_TO_SHELL: &str = "zsh";
+const SHELL: &str = "zsh";
 const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 
 const NAME: &str = "test";

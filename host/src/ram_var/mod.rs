@@ -1,6 +1,7 @@
 use once_cell::sync::Lazy;
 use std::sync::{Mutex, MutexGuard};
 use txt_writer;
+
 pub struct HostData {
     pub data: String,
     pub kill_thread: bool,
@@ -22,12 +23,13 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
             }
         }
     };
+    let _location = crate::db::get_path(_data.clone());
     Mutex::new(HostData {
         data: String::new(),
         kill_thread: false,
         redis_key: _data,
-        location: String::new(),
-        last_working_location: String::new(),
+        location: _location.clone(),
+        last_working_location: _location,
     })
 });
 
@@ -43,3 +45,4 @@ impl HostData {
         }
     }
 }
+
