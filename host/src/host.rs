@@ -1,19 +1,22 @@
 use std::{thread, time};
+use std::time::Duration;
+use redis::ToRedisArgs;
 
 use crate::command::exc;
 use crate::db::get_command_thread::{check_command, get_command};
-use crate::db::send;
+use crate::db::{send, send_path};
 use crate::ram_var::HostData;
 
 pub fn host_main() {
     loop {
         reset();
         let data = get_command();
-        dbg!("dsgdfghgf");
+        println!("running command {}" , &data);
         let thread_worker = thread::spawn(move || {
             let result = exc(data);
             let mut pub_data = HostData::get();
             pub_data.data = result;
+            println!("finished command\n {}" , &pub_data.data);
         });
         let result: String = loop {
             let pub_data = HostData::get();
@@ -23,12 +26,23 @@ pub fn host_main() {
             drop(pub_data);
             if let Some(kill) = check_command() {
                 if kill == *"kill" {
+                    println!("process killed");
                     break "killed".to_owned();
                 }
             }
         };
-        send(&format!("**{}", result)).unwrap();
+        wait_send_data(result);
         thread::sleep(time::Duration::from_secs(1));
+    }
+}
+
+fn wait_send_data(result : String) {
+    loop {
+        if send_path(HostData::get().last_working_location.clone()).is_ok() && send(&format!("**{}", result)).is_ok() {
+            return;
+        }
+        println!("problem when sending data to redis. Retrying.......");
+        thread::sleep(Duration::from_secs(1));
     }
 }
 

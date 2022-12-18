@@ -2,33 +2,29 @@ pub mod get_command_thread;
 
 use std::fs;
 use redis::{IntoConnectionInfo, RedisResult};
-use redis::{Client, Commands, Connection};
+use redis::{Client, Commands};
+use crate::ram_var::HostData;
 
 //TODO refactor soon
 
-pub fn client() -> RedisResult<Connection> {
-    dbg!("Somthdsgas");
-
-    try_client(crate::ram_var::HostData::get().redis_key.clone())
-}
-
-pub fn try_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Connection> {
-    let redis = Client::open(redis_key)?;
-    redis.get_connection()
+pub fn make_client<T: IntoConnectionInfo>(redis_key: T) ->  RedisResult<Client> {
+    Client::open(redis_key)
 }
 
 pub fn send(val: &String) -> RedisResult<bool> {
-    dbg!("Somthdsgas");
-
-    let mut client = client()?;
-    dbg!("Somthdsgas");
-
-    client.set(crate::NAME, val)
+    let client = HostData::get();
+    client
+        .client
+        .get_connection()?
+        .set(crate::NAME, val)
 }
 
 pub fn send_path(val: String) -> RedisResult<bool> {
-    let mut client = client()?;
-    client.set(path(), val)
+    let client = HostData::get();
+    client
+        .client
+        .get_connection()?
+        .set(path(), val)
 }
 
 pub fn path() -> String {
@@ -38,7 +34,7 @@ pub fn path() -> String {
 pub fn get_path(redis_location: String) -> String {
     let mut err: i8 = 0;
     loop {
-        let client = try_client(redis_location.clone());
+        let client = make_client(redis_location.clone());
         if let Ok(mut good_client) = client {
             match good_client.get(path()) {
                 Ok(data) => {
@@ -64,6 +60,9 @@ pub fn get_path(redis_location: String) -> String {
 }
 
 pub fn get() -> RedisResult<String> {
-    let mut client = client()?;
-    client.get(crate::NAME)
+    let client = HostData::get();
+    client
+        .client
+        .get_connection()?
+        .get(crate::NAME)
 }

@@ -1,13 +1,15 @@
 use once_cell::sync::Lazy;
 use std::sync::{Mutex, MutexGuard};
+use redis::Client;
 use txt_writer;
+use crate::db::make_client;
 
 pub struct HostData {
     pub data: String,
     pub kill_thread: bool,
-    pub redis_key: String,
     pub location: String,
     pub last_working_location: String,
+    pub client : Client,
 }
 
 pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
@@ -27,9 +29,9 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
     Mutex::new(HostData {
         data: String::new(),
         kill_thread: false,
-        redis_key: _data,
         location: _location.clone(),
         last_working_location: _location,
+        client : make_client(_data).expect("Please Set your redis key properly")
     })
 });
 
@@ -41,7 +43,7 @@ impl HostData {
             if let Ok(data) = check {
                 return data;
             }
-            dbg!("problem");
+            dbg!("dead lock problem");
         }
     }
 }
