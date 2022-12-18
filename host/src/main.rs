@@ -12,6 +12,7 @@ const NAME: &str = "test";
 
 fn main() {
     db::send_path("Nowhere(cd into root directory)".to_owned()).expect("Error When Connecting To Redis");
+    db::send(&"**Started Server".to_owned()).expect("Error When Connecting To Redis");
     println!("starting host version");
     host_main();
 }

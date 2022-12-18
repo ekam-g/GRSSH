@@ -35,7 +35,7 @@ fn wait_for_new() -> (String, String) {
                 return (command.replace("**", ""), path);
             }
         }
-        if _time == 120 {
+        if _time == 60 {
             if dead_server {
                 println!("host pc might be dead or not responding, waiting.........")
             } else if y_n("Command kill?(y or n)") {
