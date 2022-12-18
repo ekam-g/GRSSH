@@ -1,5 +1,5 @@
 [package]
-name = "global_ssh"
+name = "global_ssh_host"
 version = "0.1.0"
 edition = "2021"
 

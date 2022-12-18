@@ -12,10 +12,17 @@ pub fn try_client<T : IntoConnectionInfo>(redis_key : T) -> RedisResult<Connecti
 
 pub fn send(val: &String) -> RedisResult<bool> {
     let mut client = client()?;
-    client.set(crate::NAME, val)
+    client.set_ex(crate::NAME, val, 360)
 }
 
 pub fn get() -> RedisResult<String> {
     let mut client = client()?;
     client.get(crate::NAME)
+}
+pub fn get_path() -> RedisResult<String> {
+    let mut  client = client()?;
+    client.get(path())
+}
+pub fn path() -> String {
+    format!("{}location", crate::NAME)
 }

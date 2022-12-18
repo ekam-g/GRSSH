@@ -1,11 +1,12 @@
 use std::{thread, time};
 
-use crate::db::send;
+use crate::db::{send};
 use crate::input::{get, y_n};
 
 pub fn client_main() {
     loop {
-        println!("{}\n-->", wait_for_new());
+        let (output ,path)  = wait_for_new();
+        println!("{}\n{} in {} -->", output, crate::NAME, path);
         let user_input = get();
         let error = {
             if user_input.contains("cd") {
@@ -23,14 +24,15 @@ pub fn client_main() {
     }
 }
 
-fn wait_for_new() -> String {
+fn wait_for_new() -> (String, String) {
     let mut _time: i8 = 0;
     let mut dead_server: bool = false;
     loop {
         let data = crate::db::get();
-        if let Ok(command) = data {
+        let path_data = crate::db::get_path();
+        if let (Ok(command), Ok(path )) = (data, path_data) {
             if command.contains("**") {
-                return command.replace("**", "");
+                return (command.replace("**", ""), path);
             }
         }
         if _time == 120 {

@@ -1,5 +1,4 @@
 use crate::host::host_main;
-use crate::ram_var::HostData;
 
 mod command;
 mod db;
@@ -12,7 +11,7 @@ const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 const NAME: &str = "test";
 
 fn main() {
-    drop(HostData::get());
+    db::send_path("Please Cd Into Your Home Directory".to_owned()).expect("Error When Connecting To Redis");
     println!("starting host version");
     host_main();
 }

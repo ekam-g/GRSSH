@@ -5,6 +5,7 @@ pub fn get() -> String {
     io::stdin()
         .read_line(&mut return_data)
         .expect("Failed to read input");
+    println!("---------------------------------------------------------");
     return_data
 }
 
