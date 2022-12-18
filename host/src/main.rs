@@ -11,7 +11,7 @@ const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 const NAME: &str = "test";
 
 fn main() {
-    db::send_path("Please Cd Into Your Home Directory".to_owned()).expect("Error When Connecting To Redis");
+    db::send_path("Nowhere(cd into root directory)".to_owned()).expect("Error When Connecting To Redis");
     println!("starting host version");
     host_main();
 }
