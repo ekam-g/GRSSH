@@ -1,4 +1,7 @@
 use std::{thread, time};
+use std::process::exit;
+use std::time::Duration;
+use crate::db;
 
 pub fn get_command() -> String {
     loop {
@@ -12,7 +15,8 @@ pub fn get_command() -> String {
 pub fn check_command() -> Option<String> {
     let data = crate::db::get();
     if let Ok(good) = data {
-        if good != *"read" && good.contains("&&") {
+        if good.contains("&&") {
+            end_check(good.trim());
             return Some(good.replace("&&", ""));
         } else if good.contains("%%") {
             let mut data = crate::ram_var::HostData::get();
@@ -22,4 +26,16 @@ pub fn check_command() -> Option<String> {
         }
     }
     None
+}
+
+fn end_check(data : &str){
+    if data == "&&quit" {
+        loop {
+            if db::send(&"**server shutting down".to_owned()).is_ok() {
+                println!("server shutting down");
+                exit(1);
+            }
+            thread::sleep(Duration::from_secs(1));
+        }
+    }
 }

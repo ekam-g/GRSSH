@@ -16,7 +16,7 @@ pub fn send(val: &String) -> RedisResult<bool> {
     client
         .client
         .get_connection()?
-        .set_ex(crate::NAME, val, 360)
+        .set(crate::NAME, val)
 }
 
 pub fn send_path(val: String) -> RedisResult<bool> {
@@ -43,14 +43,14 @@ pub fn get_path(redis_location: String) -> String {
                         return check
                     }
                     println!("unable to find old path, please cd into home directory");
-                    let _ : RedisResult<bool> = good_client.set_ex(crate::NAME,"**unable to find old path, please cd into home directory", 1000);
+                    let _ : RedisResult<bool> = good_client.set(crate::NAME,"**unable to find old path, please cd into home directory");
                     return String::new();
                 },
                 Err(_) => {
                     err += 1;
                     if err == 30 {
                         println!("unable to find old path, please cd into home directory");
-                        let _ : RedisResult<bool> = good_client.set_ex(crate::NAME,"**unable to find old path, please cd into home directory", 1000);
+                        let _ : RedisResult<bool> = good_client.set(crate::NAME,"**unable to find old path, please cd into home directory");
                         return  String::new()
                     }
                 }
