@@ -22,6 +22,8 @@ pub fn exc(what: String) -> String {
         let mut path = HostData::get();
         if fs::read_dir(&path.location).is_err() {
             path.location = path.last_working_location.clone();
+        }else {
+            path.last_working_location = path.location.clone();
         }
         path.location.clone()
     };
@@ -30,7 +32,6 @@ pub fn exc(what: String) -> String {
         .output();
     match success {
         Ok(good) => {
-            update();
             String::from_utf8(good.stdout).unwrap()
         }
         Err(error) => {
@@ -63,11 +64,9 @@ pub fn exc(what: String) -> String {
                     if good_or_no == *"" {
                         return error.to_string();
                     }
-                    update();
                     good_or_no
                 }
                 Err(e) => {
-                    fix();
                     e.to_string()
                 }
             }
@@ -75,13 +74,3 @@ pub fn exc(what: String) -> String {
     }
 }
 
-fn update() {
-    let mut fix = HostData::get();
-    let new = fix.location.clone();
-    fix.last_working_location = new;
-}
-
-fn fix() {
-    let mut fix = HostData::get();
-    fix.location = fix.last_working_location.clone();
-}
