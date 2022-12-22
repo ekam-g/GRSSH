@@ -67,7 +67,7 @@ pub fn get_path(redis_location: String) -> Vec<String> {
 }
 fn set_unknown(mut good_client : Client) {
     let _ : RedisResult<bool> = good_client.set(crate::NAME,"**unable to find old path, please cd into home directory");
-    let _ : RedisResult<bool> = good_client.set(format!("{}location", crate::NAME),"no_where");
+    let _ : RedisResult<bool> = good_client.set(format!("{}location", crate::NAME),"/");
 }
 
 pub fn get() -> RedisResult<String> {

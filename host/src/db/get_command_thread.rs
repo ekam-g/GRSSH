@@ -20,7 +20,13 @@ pub fn check_command() -> Option<String> {
             return Some(good.replace("&&", ""));
         } else if good.contains("%%") {
             let mut data = crate::ram_var::HostData::get();
-            data.location.push(good.replace("%%", "").replace("cd", "").trim().to_owned());
+            if good.contains("cd -") {
+                //Todo fix bug here
+                let del = data.location.len() - 1;
+                data.location.remove(del);
+            } else {
+                data.location.push(good.replace("%%", "").replace("cd", "").trim().to_owned());
+            }
             println!("changing location to {}", &data.location.join(""));
             return Some("ls".to_owned());
         }
