@@ -18,6 +18,9 @@ pub fn send(val: &String) -> RedisResult<bool> {
         .get_connection()?
         .set(crate::NAME, val)
 }
+pub fn format_path(passed :Vec<String>) -> String {
+    format!( "/{}", passed.join("/"))
+}
 
 pub fn send_path(val: String) -> RedisResult<bool> {
     let client = HostData::get();
@@ -31,7 +34,8 @@ pub fn path() -> String {
     format!("{}location", crate::NAME)
 }
 
-pub fn get_path(redis_location: String) -> String {
+pub fn get_path(redis_location: String) -> Vec<String> {
+    let mut return_val: Vec<String> = vec![];
     let mut err: i8 = 0;
     loop {
         let client = make_client(redis_location.clone());
@@ -40,18 +44,21 @@ pub fn get_path(redis_location: String) -> String {
                 Ok(data) => {
                     let check: String = data;
                     if fs::read_dir(check.clone()).is_ok() {
-                        return check
+                        for path  in check.split('/') {
+                            return_val.push(path.to_owned());
+                        }
+                        return return_val;
                     }
                     println!("unable to find old path, please cd into home directory");
                     let _ : RedisResult<bool> = good_client.set(crate::NAME,"**unable to find old path, please cd into home directory");
-                    return String::new();
+                    return vec![];
                 },
                 Err(_) => {
                     err += 1;
                     if err == 30 {
                         println!("unable to find old path, please cd into home directory");
                         let _ : RedisResult<bool> = good_client.set(crate::NAME,"**unable to find old path, please cd into home directory");
-                        return  String::new()
+                        return  vec![]
                     }
                 }
             }

@@ -1,4 +1,4 @@
-use std::{thread, time};
+use std::{thread};
 use std::time::Duration;
 
 use crate::command::exc;
@@ -31,14 +31,14 @@ pub fn host_main() {
             }
         };
         wait_send_data(result);
-        thread::sleep(time::Duration::from_millis(10));
+        thread::sleep(Duration::from_millis(10));
     }
 }
 
 fn wait_send_data(result : String) {
     loop {
         let path = HostData::get().last_working_location.clone();
-        if send_path(path).is_ok() && send(&format!("**{}", result)).is_ok() {
+        if send_path(path.join("/")).is_ok() && send(&format!("**{}", result)).is_ok() {
             return;
         }
         println!("problem when sending data to redis. Retrying.......");

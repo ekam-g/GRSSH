@@ -6,7 +6,7 @@ use crate::input::{get, y_n};
 pub fn client_main() {
     loop {
         let (output ,path)  = wait_for_new();
-        println!("{}\n{} in {} -->", output, crate::NAME, path);
+        println!("\n{}\n{} in {} -->", output, crate::NAME, path);
         let user_input = get();
         let error = {
             if user_input.contains("cd") {

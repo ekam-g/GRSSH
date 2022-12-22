@@ -1,5 +1,6 @@
 use std::fs;
 use std::process::Command;
+use crate::db::format_path;
 
 
 use crate::ram_var::HostData;
@@ -20,12 +21,12 @@ pub fn exc(what: String) -> String {
     };
     let file: String = {
         let mut path = HostData::get();
-        if fs::read_dir(&path.location).is_err() {
+        if fs::read_dir(format_path(path.location.clone())).is_err() {
             path.location = path.last_working_location.clone();
         }else {
             path.last_working_location = path.location.clone();
         }
-        path.location.clone()
+        format_path(path.location.clone())
     };
     let success = Command::new(first).current_dir(&file)
         .args(rest)
