@@ -13,7 +13,7 @@ const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 const NAME: &str = "test";
 
 fn main() {
-    db::send(&"**Started Server".to_owned()).expect("Error When Connecting To Redis");
+    db::send("**Started Server").expect("Error When Connecting To Redis");
     println!("starting host version");
     host_main();
 }

@@ -10,7 +10,7 @@ pub fn host_main() {
     loop {
         reset();
         let data = get_command();
-        let _ = send(&"read".to_owned());
+        let _ = send("read");
         println!("running command {}" , &data);
         let thread_worker = thread::spawn(move || {
             let result = exc(data);
@@ -39,7 +39,7 @@ pub fn host_main() {
 fn wait_send_data(result : String) {
     loop {
         let path = HostData::get().last_working_location.clone();
-        if send_path(format_path(path)).is_ok() && send(&format!("**{}", result)).is_ok() {
+        if send_path(format_path(path)).is_ok() && send(format!("**{result}",)).is_ok() {
             return;
         }
         println!("problem when sending data to redis. Retrying.......");

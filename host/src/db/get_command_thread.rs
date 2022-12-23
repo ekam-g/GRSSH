@@ -48,7 +48,7 @@ fn cd_command(good : String) -> Option<String> {
 fn end_check(data: &str) {
     if data == "&&quit" {
         loop {
-            if db::send(&"**server shutting down".to_owned()).is_ok() {
+            if db::send("**server shutting down").is_ok() {
                 println!("server shutting down");
                 exit(1);
             }

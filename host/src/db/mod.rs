@@ -1,7 +1,8 @@
 pub mod get_command_thread;
 
+use std::fmt::Display;
 use std::fs;
-use redis::{IntoConnectionInfo, RedisResult};
+use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
 use redis::{Client, Commands};
 use crate::ram_var::HostData;
 
@@ -11,7 +12,7 @@ pub fn make_client<T: IntoConnectionInfo>(redis_key: T) ->  RedisResult<Client> 
     Client::open(redis_key)
 }
 
-pub fn send(val: &String) -> RedisResult<bool> {
+pub fn send< T: ToRedisArgs>(val: T) -> RedisResult<bool> {
     let client = HostData::get();
     client
         .client

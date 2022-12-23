@@ -21,7 +21,7 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
             Err(error_data) => {
                 txt_writer::WriteData{}.replace("Add key here","redis_key.txt")
                     .expect("please allow writing permissions");
-                panic!("failed to read redis key, please set it or change permissions.\n{}",error_data );
+                panic!("failed to read redis key, please set it or change permissions.\n{error_data}" );
             }
         }
     };
