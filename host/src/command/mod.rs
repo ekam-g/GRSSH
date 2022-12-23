@@ -26,6 +26,7 @@ pub fn exc(what: String) -> String {
         }else {
             path.last_working_location = path.location.clone();
         }
+
         format_path(path.location.clone())
     };
     let success = Command::new(first).current_dir(&file)

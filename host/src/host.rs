@@ -3,13 +3,14 @@ use std::time::Duration;
 
 use crate::command::exc;
 use crate::db::get_command_thread::{check_command, get_command};
-use crate::db::{send, send_path};
+use crate::db::{format_path, send, send_path};
 use crate::ram_var::HostData;
 
 pub fn host_main() {
     loop {
         reset();
         let data = get_command();
+        let _ = send(&"read".to_owned());
         println!("running command {}" , &data);
         let thread_worker = thread::spawn(move || {
             let result = exc(data);
@@ -38,7 +39,7 @@ pub fn host_main() {
 fn wait_send_data(result : String) {
     loop {
         let path = HostData::get().last_working_location.clone();
-        if send_path(path.join("/")).is_ok() && send(&format!("**{}", result)).is_ok() {
+        if send_path(format_path(path)).is_ok() && send(&format!("**{}", result)).is_ok() {
             return;
         }
         println!("problem when sending data to redis. Retrying.......");

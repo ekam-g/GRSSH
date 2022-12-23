@@ -25,7 +25,8 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
             }
         }
     };
-    let _location = crate::db::get_path(_data.clone());
+    let mut _location = crate::db::get_path(_data.clone());
+    _location.retain(|x| !x.is_empty());
     Mutex::new(HostData {
         data: String::new(),
         kill_thread: false,
