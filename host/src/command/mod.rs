@@ -1,5 +1,6 @@
+use std::io::Error;
 use std::fs;
-use std::process::Command;
+use std::process::{Command, Output};
 use crate::db::format_path;
 
 
@@ -39,19 +40,7 @@ pub fn exc(what: String) -> String {
         Err(error) => {
             let run = {
                 if crate::SHELL.is_empty() {
-                    if !cfg!(target_os = "linux") {
-                        Command::new("bash")
-                            .current_dir(file)
-                            .args(["-c"])
-                            .args(what.split_whitespace())
-                            .output()
-                    } else {
-                        Command::new("cmd")
-                            .current_dir(file)
-                            .args(["/C"])
-                            .args(what.split_whitespace())
-                            .output()
-                    }
+                    os_try(file, what)
                 } else {
                     Command::new(crate::SHELL)
                         .current_dir(file)
@@ -73,6 +62,22 @@ pub fn exc(what: String) -> String {
                 }
             }
         }
+    }
+}
+
+fn os_try(file : String, what : String)  -> Result<Output,Error > {
+    if cfg!(windows) {
+        Command::new("cmd")
+            .current_dir(file)
+            .args(["/C"])
+            .args(what.split_whitespace())
+            .output()
+    }else {
+        Command::new("bash")
+            .current_dir(file)
+            .args(["-c"])
+            .args(what.split_whitespace())
+            .output()
     }
 }
 

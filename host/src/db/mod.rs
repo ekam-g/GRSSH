@@ -20,6 +20,9 @@ pub fn send< T: ToRedisArgs>(val: T) -> RedisResult<bool> {
         .set(crate::NAME, val)
 }
 pub fn format_path(passed :Vec<String>) -> String {
+    if cfg!(windows) {
+        return format!( "C:{}", passed.join("\\"));
+    }
     format!( "/{}", passed.join("/"))
 }
 
