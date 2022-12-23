@@ -10,7 +10,7 @@ pub fn get() -> String {
 }
 
 pub fn y_n(message: impl Display) -> bool {
-    println!("{}", message);
+    println!("{message}");
     loop {
         let input = get();
         match input.trim() {

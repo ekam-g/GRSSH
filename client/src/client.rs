@@ -10,9 +10,9 @@ pub fn client_main() {
         let user_input = get();
         let error = {
             if user_input.contains("cd") {
-                send(&format!("%%{}", user_input))
+                send(&format!("%%{user_input}"))
             } else {
-                send(&format!("&&{}", user_input))
+                send(&format!("&&{user_input}"))
             }
         };
         match error {
@@ -47,7 +47,7 @@ fn wait_for_new() -> (String, String) {
                         _time = 0;
                     }
                     Err(oh_no) => {
-                        println!("{}", oh_no)
+                        println!("{oh_no}")
                     }
                 }
             }
