@@ -1,6 +1,6 @@
 pub mod get_command_thread;
 
-use std::fmt::Display;
+
 use std::fs;
 use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
 use redis::{Client, Commands};
