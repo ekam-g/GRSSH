@@ -1,12 +1,11 @@
+use std::process::exit;
 use once_cell::sync::Lazy;
 use std::sync::{Mutex, MutexGuard};
 use txt_writer;
 pub struct HostData {
-    pub data: String,
-    pub kill_thread: bool,
+    pub connect: String,
     pub redis_key: String,
-    pub location: String,
-    pub last_working_location: String,
+
 }
 
 pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
@@ -16,18 +15,15 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
         match try_read {
             Ok(data) => data.trim().to_owned(),
             Err(error_data) => {
-                txt_writer::WriteData{}.replace("Add key here","redis_key.txt")
-                    .expect("please allow writing permissions");
-                panic!("failed to read redis key, please set it or change permissions.\n{error_data}" )
+                let _ = txt_writer::WriteData{}.replace("Add key here","redis_key.txt");
+                println!("failed to read redis key, please set it or change permissions.\n{error_data}");
+                exit(0);
             }
         }
     };
     Mutex::new(HostData {
-        data: String::new(),
-        kill_thread: false,
+        connect:  String::new(),
         redis_key: _data,
-        location: String::new(),
-        last_working_location: String::new(),
     })
 });
 

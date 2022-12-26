@@ -1,3 +1,4 @@
+use std::process::exit;
 use once_cell::sync::Lazy;
 use std::sync::{Mutex, MutexGuard};
 use redis::Client;
@@ -19,20 +20,32 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
         match try_read {
             Ok(data) => data.trim().to_owned(),
             Err(error_data) => {
-                txt_writer::WriteData{}.replace("Add key here","redis_key.txt")
-                    .expect("please allow writing permissions");
-                panic!("failed to read redis key, please set it or change permissions.\n{error_data}" );
+                let _ = txt_writer::WriteData{}.replace("Add key here","redis_key.txt");
+                println!("failed to read redis key, please set it or change permissions.\n{error_data}");
+                exit(1);
             }
         }
     };
-    let mut _location = crate::db::get_path(_data.clone());
-    _location.retain(|x| !x.is_empty());
+    let client = {
+        match make_client(_data.clone()) {
+            Ok(good) => good,
+            Err(e) =>{
+                println!("failed trying to make redis client make sure you wifi set and your redis key is good\n{e}");
+                exit(1);
+            }
+        }
+    };
+    let location  = {
+        let mut _location = crate::db::get_path(_data);
+        _location.retain( | x| ! x.is_empty());
+        _location
+    };
     Mutex::new(HostData {
         data: String::new(),
         kill_thread: false,
-        location: _location.clone(),
-        last_working_location: _location,
-        client : make_client(_data).expect("Please Set your redis key properly")
+        location: location.clone(),
+        last_working_location: location,
+        client
     })
 });
 

@@ -2,11 +2,12 @@ use std::{thread, time};
 
 use crate::db::{send};
 use crate::input::{get, y_n};
+use crate::ram_var::HostData;
 
 pub fn client_main() {
     loop {
         let (output ,path)  = wait_for_new();
-        println!("\n{}\n{} in {} -->", output, crate::NAME, path);
+        println!("\n{}\n{} in {} -->", output, HostData::get().connect, path);
         let user_input = get();
         let error = {
             if user_input.contains("cd") {

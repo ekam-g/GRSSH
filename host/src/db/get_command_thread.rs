@@ -33,7 +33,14 @@ fn cd_command(good : String) -> Option<String> {
             let remove = &data.location[remove_location].clone();
             data.location.retain(|x| x != remove);
         }
-    }else if good.replace("%%", "").trim() == "cd" {
+    }
+    else if good.contains("cd ~")  {
+        data.location = vec![];
+        for path in good.split('/') {
+            data.location.push(path.to_owned());
+        }
+    }
+    else if good.replace("%%", "").trim() == "cd" {
         data.location = vec![];
     }
     else {

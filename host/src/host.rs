@@ -19,11 +19,9 @@ pub fn host_main() {
             println!("finished command\n {}" , &pub_data.data);
         });
         let result: String = loop {
-            let pub_data = HostData::get();
             if thread_worker.is_finished() {
-                break pub_data.data.clone();
+                break HostData::get().data.clone();
             }
-            drop(pub_data);
             if let Some(kill) = check_command() {
                 if kill == *"kill" {
                     println!("process killed");
@@ -32,7 +30,6 @@ pub fn host_main() {
             }
         };
         wait_send_data(result);
-        thread::sleep(Duration::from_millis(10));
     }
 }
 
