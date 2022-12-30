@@ -12,7 +12,6 @@ pub fn try_client<T : IntoConnectionInfo>(redis_key : T) -> RedisResult<Connecti
     let redis = Client::open(redis_key)?;
     redis.get_connection()
 }
-
 pub fn send(val: &String) -> RedisResult<bool> {
     let mut client = client()?;
     client.set_ex(HostData::get().connect.clone(), val, 360)
@@ -30,9 +29,9 @@ pub fn path() -> String {
     format!("{}location", HostData::get().connect.clone())
 }
 pub fn who() {
-    let mut error;
     let mut error_amount: i8 = 0;
     while error_amount < 120 {
+        let error;
         let client = client();
         match client {
             Ok(mut client) => {
@@ -40,23 +39,23 @@ pub fn who() {
                 match servers {
                     Ok(mut servers) => {
                         servers.retain(|x| !x.contains("location"));
-                        println!("The Servers on: {}\n connect to who?", servers.join(", "));
-                        HostData::get().connect = crate::input::get();
+                        println!("The Servers on: {}\n\nconnect to who?", servers.join(", "));
+                        HostData::get().connect = crate::input::get().trim().to_owned();
                         return;
                     },
                     Err(e) => {
-                        error = e.to_string();
+                        error = e;
                     }
                 }
             }
             Err(e) => {
-                error = e.to_string();
+                error = e;
             }
         }
         thread::sleep(Duration::from_millis(10));
         error_amount += 1;
         println!("error when connecting to redis, retrying {error_amount}\n{error}");
     }
-    println!("exiting, please read error and try to check wifi and redis server and redis key.");
+    println!("exiting, please read error and try to check wifi, redis server, and redis key.");
     exit(0);
 }

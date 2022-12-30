@@ -1,8 +1,8 @@
 use std::process::exit;
 use once_cell::sync::Lazy;
 use std::sync::{Mutex, MutexGuard};
-use txt_writer;
-pub struct HostData {
+
+ pub struct HostData {
     pub connect: String,
     pub redis_key: String,
 
@@ -35,6 +35,7 @@ impl HostData {
             if let Ok(data) = check {
                 return data;
             }
+            dbg!("deadlock");
         }
     }
 }

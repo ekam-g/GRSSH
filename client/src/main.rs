@@ -3,7 +3,7 @@ use crate::db::who;
 
 mod client;
 mod db;
-pub mod ram_var;
+mod ram_var;
 mod input;
 
 const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";

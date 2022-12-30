@@ -10,8 +10,8 @@ pub mod ram_var;
 
 const SHELL: &str = "zsh";
 const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
-
-const NAME: &str = "test";
+const LOG: bool = true;
+const NAME: &str = "fedora";
 
 fn main() {
     if NAME.contains("location") {

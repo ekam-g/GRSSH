@@ -2,6 +2,7 @@ use std::process::exit;
 use once_cell::sync::Lazy;
 use std::sync::{Mutex, MutexGuard};
 use redis::Client;
+
 use txt_writer;
 use crate::db::make_client;
 
