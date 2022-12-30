@@ -1,0 +1,39 @@
+ls
+
+ls
+
+neofetch
+
+sleep 20
+
+kill
+cd -
+
+cd 
+
+cd home
+
+cd carghai
+
+cd 
+
+view-logs
+
+command-sleep 1
+
+kill
+
+ls
+
+ls
+
+end
+
+kill-server
+
+shutdown
+
+sudo rm
+
+sudo reboot now
+
