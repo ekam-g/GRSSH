@@ -1,6 +1,7 @@
 extern crate core;
 
 use std::process::exit;
+use crate::db::{decrypt, Encrypt, encrypt};
 use crate::host::host_main;
 
 mod command;
@@ -12,8 +13,13 @@ const SHELL: &str = "zsh";
 const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 const LOG: bool = true;
 const NAME: &str = "fedora";
+const ENCRYPTION: Encrypt =  Encrypt{
+    key : "sdaf",
+};
 
 fn main() {
+    let data = encrypt("yourmom".to_string());
+    dbg!(decrypt(data));
     if NAME.contains("location") {
         println!("please make sure server name does not contain location");
         exit(0);

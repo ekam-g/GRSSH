@@ -3,6 +3,7 @@ use std::thread;
 use std::time::Duration;
 use redis::{IntoConnectionInfo, RedisResult};
 use redis::{Client, Commands, Connection};
+use crate::ENCRYPTION;
 use crate::ram_var::HostData;
 
 pub fn client() -> RedisResult<Connection> {
@@ -58,4 +59,28 @@ pub fn who() {
     }
     println!("exiting, please read error and try to check wifi, redis server, and redis key.");
     exit(0);
+}
+
+pub fn encrypt(data: String) -> String{
+    let mut return_data:Vec<String> = vec![];
+    encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
+    for letter in data.into_bytes(){
+        return_data.push( encrypted_id::encrypt(letter as u64, ENCRYPTION.key).unwrap());
+    }
+    dbg!(&return_data);
+    return_data.join("/")
+}
+
+pub fn decrypt(data: String) -> String{
+    let mut return_data:Vec<u8> = vec![];
+    encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
+    for letter in data.split('/') {
+        let id = encrypted_id::decrypt(letter, ENCRYPTION.key).unwrap();
+        return_data.push(id.to_string().parse().unwrap())
+    }
+    String::from_utf8(return_data).unwrap()
+}
+
+pub struct Encrypt<'a> {
+    pub key: &'a str,
 }
