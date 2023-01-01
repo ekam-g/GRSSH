@@ -16,13 +16,13 @@ pub fn make_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Client> {
     Client::open(redis_key)
 }
 
-pub fn send<T: Display>(val: T) -> RedisResult<bool> {
+pub fn send<T: Display>(val: T) -> Option<RedisResult<bool>> {
     let send = encrypt(val.to_string());
-    let client = HostData::get();
-    client
-        .client
-        .get_connection()?
-        .set(crate::NAME, send)
+    if let Some(send) = send {
+        let client = HostData::get();
+        Some(client.client.get_connection()?.set(crate::NAME, send))
+    }
+    None
 }
 
 pub fn format_path(passed: Vec<String>) -> String {
@@ -97,7 +97,7 @@ pub fn encrypt(data: String) -> Option<String> {
         let pusb_val = encrypted_id::encrypt(letter as u64, ENCRYPTION.key);
         if let Ok(push) = pusb_val {
             return_data.push(push);
-        }else {
+        } else {
             return None;
         }
     }
@@ -113,14 +113,12 @@ pub fn decrypt(data: String) -> Option<String> {
     for letter in data.split('/') {
         let id = encrypted_id::decrypt(letter, ENCRYPTION.key);
         if let Ok(id) = id {
-            if let Ok(id ) = id.to_string().parse() {
+            if let Ok(id) = id.to_string().parse() {
                 return_data.push(id)
+            } else {
+                return None;
             }
-            else {
-                return  None;
-            }
-        }
-        else {
+        } else {
             return None;
         }
     }
