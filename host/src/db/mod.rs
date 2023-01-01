@@ -1,7 +1,7 @@
 use std::fmt::Display;
 use std::fs;
 
-use redis::{IntoConnectionInfo, RedisResult};
+use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
 use redis::{Client, Commands};
 
 use crate::{ENCRYPTION, NAME};
@@ -16,13 +16,24 @@ pub fn make_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Client> {
     Client::open(redis_key)
 }
 
-pub fn send<T: Display>(val: T) -> Option<RedisResult<bool>> {
+fn where_send<T : Display, E : ToRedisArgs>(val: T, location : E) -> Option<RedisResult<bool>>{
     let send = encrypt(val.to_string());
     if let Some(send) = send {
-        let client = HostData::get();
-        Some(client.client.get_connection()?.set(crate::NAME, send))
+        let client = HostData::get().client.get_connection();
+        return match client {
+            Ok(mut connection) =>{
+                Some(connection.set(location, send))
+            }
+            Err(e) => {
+                Some(Err(e))
+            }
+        }
     }
     None
+}
+
+pub fn send<T: Display>(val: T) -> Option<RedisResult<bool>> {
+    where_send(val, NAME)
 }
 
 pub fn format_path(passed: Vec<String>) -> String {
@@ -32,13 +43,8 @@ pub fn format_path(passed: Vec<String>) -> String {
     format!("/{}", passed.join("/"))
 }
 
-pub fn send_path(val: String) -> RedisResult<bool> {
-    let client = HostData::get();
-    let send = encrypt(val);
-    client
-        .client
-        .get_connection()?
-        .set(path(), send)
+pub fn send_path(val: String) -> Option<RedisResult<bool>> {
+    where_send(val, path())
 }
 
 pub fn path() -> String {
@@ -78,16 +84,23 @@ pub fn get_path(redis_location: String) -> Vec<String> {
 }
 
 fn set_unknown(mut good_client: Client) {
-    let _: RedisResult<bool> = good_client.set(crate::NAME, "**unable to find old path, please cd into home directory");
-    let _: RedisResult<bool> = good_client.set(format!("{}location", crate::NAME), "/");
+    let _: RedisResult<bool> = good_client.set(encrypt(crate::NAME.to_owned()), encrypt("**unable to find old path, please cd into home directory".to_owned()));
+    let _: RedisResult<bool> = good_client.set(encrypt(format!("{}location", crate::NAME)), encrypt("/".to_owned()));
 }
 
-pub fn get() -> RedisResult<String> {
+pub fn get() -> RedisResult<Option<String>> {
     let client = HostData::get();
-    client
+    let data = client
         .client
         .get_connection()?
-        .get(crate::NAME)
+        .get(crate::NAME);
+    return match data {
+        Err(e)=> Err(e),
+        Ok(data)=> {
+           Ok(decrypt(data))
+        }
+    }
+
 }
 
 pub fn encrypt(data: String) -> Option<String> {
