@@ -91,18 +91,19 @@ pub fn encrypt(data: String) -> String{
     let mut return_data:Vec<String> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
     for letter in data.into_bytes(){
-        return_data.push( encrypted_id::encrypt(letter as u64, ENCRYPTION.key).unwrap());
+        return_data.push(letter.to_string())
     }
-    dbg!(&return_data);
-    return_data.join("/")
+    let cript = encrypted_id::encrypt(return_data.join("").parse().unwrap(), ENCRYPTION.key).unwrap();
+    dbg!(&cript);
+    cript
 }
 
 pub fn decrypt(data: String) -> String{
     let mut return_data:Vec<u8> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
-    for letter in data.split('/') {
-        let id = encrypted_id::decrypt(letter, ENCRYPTION.key).unwrap();
-        return_data.push(id.to_string().parse().unwrap())
+    let id = encrypted_id::decrypt(&data, ENCRYPTION.key).unwrap().to_string();
+    for letter in id.split("") {
+        return_data.push(letter.to_string().parse().unwrap())
     }
     String::from_utf8(return_data).unwrap()
 }
