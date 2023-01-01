@@ -1,9 +1,10 @@
+use std::fmt::Display;
 use std::fs;
 
-use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
+use redis::{IntoConnectionInfo, RedisResult};
 use redis::{Client, Commands};
 
-use crate::ENCRYPTION;
+use crate::{ENCRYPTION, NAME};
 use crate::ram_var::HostData;
 
 pub mod get_command_thread;
@@ -15,12 +16,13 @@ pub fn make_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Client> {
     Client::open(redis_key)
 }
 
-pub fn send<T: ToRedisArgs>(val: T) -> RedisResult<bool> {
+pub fn send<T: Display>(val: T) -> RedisResult<bool> {
+    let send = encrypt(val.to_string());
     let client = HostData::get();
     client
         .client
         .get_connection()?
-        .set(crate::NAME, val)
+        .set(crate::NAME, send)
 }
 
 pub fn format_path(passed: Vec<String>) -> String {
@@ -32,10 +34,11 @@ pub fn format_path(passed: Vec<String>) -> String {
 
 pub fn send_path(val: String) -> RedisResult<bool> {
     let client = HostData::get();
+    let send = encrypt(val);
     client
         .client
         .get_connection()?
-        .set(path(), val)
+        .set(path(), send)
 }
 
 pub fn path() -> String {
@@ -87,25 +90,41 @@ pub fn get() -> RedisResult<String> {
         .get(crate::NAME)
 }
 
-pub fn encrypt(data: String) -> String{
-    let mut return_data:Vec<String> = vec![];
+pub fn encrypt(data: String) -> Option<String> {
+    let mut return_data: Vec<String> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
-    for letter in data.into_bytes(){
-        return_data.push(letter.to_string())
+    for letter in data.into_bytes() {
+        let pusb_val = encrypted_id::encrypt(letter as u64, ENCRYPTION.key);
+        if let Ok(push) = pusb_val {
+            return_data.push(push);
+        }else {
+            return None;
+        }
     }
-    let cript = encrypted_id::encrypt(return_data.join("").parse().unwrap(), ENCRYPTION.key).unwrap();
-    dbg!(&cript);
-    cript
+    Some(return_data.join("/"))
 }
 
-pub fn decrypt(data: String) -> String{
-    let mut return_data:Vec<u8> = vec![];
-    encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
-    let id = encrypted_id::decrypt(&data, ENCRYPTION.key).unwrap().to_string();
-    for letter in id.split("") {
-        return_data.push(letter.to_string().parse().unwrap())
+pub fn decrypt(data: String) -> Option<String> {
+    if !data.contains('/') {
+        return None;
     }
-    String::from_utf8(return_data).unwrap()
+    let mut return_data: Vec<u8> = vec![];
+    encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
+    for letter in data.split('/') {
+        let id = encrypted_id::decrypt(letter, ENCRYPTION.key);
+        if let Ok(id) = id {
+            if let Ok(id ) = id.to_string().parse() {
+                return_data.push(id)
+            }
+            else {
+                return  None;
+            }
+        }
+        else {
+            return None;
+        }
+    }
+    Some(String::from_utf8(return_data).unwrap())
 }
 
 pub struct Encrypt<'a> {

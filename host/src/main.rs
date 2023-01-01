@@ -18,8 +18,6 @@ const ENCRYPTION: Encrypt =  Encrypt{
 };
 
 fn main() {
-    let data = encrypt("yourmom".to_string());
-    dbg!(decrypt(data));
     if NAME.contains("location") {
         println!("please make sure server name does not contain location");
         exit(0);
