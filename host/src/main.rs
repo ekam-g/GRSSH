@@ -1,7 +1,7 @@
 extern crate core;
 
 use std::process::exit;
-use crate::db::{decrypt, Encrypt, encrypt};
+use crate::db::{Encrypt};
 use crate::host::host_main;
 
 mod command;
@@ -23,7 +23,7 @@ fn main() {
         exit(0);
     }
     let send_result = db::send("**Started Server");
-    if let Err(e) = send_result {
+    if let Some(Err(e)) = send_result {
         println!("Failed starting server when connecting to redis\n{e}"); 
         exit(0);
     }

@@ -22,7 +22,7 @@ pub fn get_command() -> Result<String, String> {
 
 pub fn check_command() -> Option<Result<String,String>> {
     let data = db::get();
-    if let Ok(good) = data {
+    if let Ok(Some(good)) = data {
         if good.contains("&&") {
             let log = good.replace("&&", "");
             thread::spawn(move || {
@@ -75,7 +75,7 @@ fn cd_command(good: String) -> String {
 fn end_check_or_sleep(data: &str) -> Option<()> {
     if data == "&&quit" {
         loop {
-            if db::send("**server shutting down").is_ok() {
+            if db::send("**server shutting down").is_some() {
                 println!("server shutting down");
                 exit(1);
             }
@@ -88,7 +88,7 @@ fn end_check_or_sleep(data: &str) -> Option<()> {
             if let Ok(sleep) = sleep_amount_unchecked.parse() {
                 let sleep_time: u64 = sleep;
                 loop {
-                    if db::send("$$server sleeping").is_ok() {
+                    if db::send("$$server sleeping").is_some() {
                         println!("server sleeping for {sleep_time} min");
                         thread::sleep(Duration::from_secs(sleep_time * 60));
                         return Some(());

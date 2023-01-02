@@ -48,7 +48,7 @@ pub fn send_path(val: String) -> Option<RedisResult<bool>> {
 }
 
 pub fn path() -> String {
-    format!("{}location", crate::NAME)
+    format!("{}location", NAME)
 }
 
 pub fn get_path(redis_location: String) -> Vec<String> {
@@ -84,8 +84,8 @@ pub fn get_path(redis_location: String) -> Vec<String> {
 }
 
 fn set_unknown(mut good_client: Client) {
-    let _: RedisResult<bool> = good_client.set(encrypt(crate::NAME.to_owned()), encrypt("**unable to find old path, please cd into home directory".to_owned()));
-    let _: RedisResult<bool> = good_client.set(encrypt(format!("{}location", crate::NAME)), encrypt("/".to_owned()));
+    let _: RedisResult<bool> = good_client.set(NAME, encrypt("**unable to find old path, please cd into home directory".to_owned()));
+    let _: RedisResult<bool> = good_client.set(format!("{}location", NAME), encrypt("/".to_owned()));
 }
 
 pub fn get() -> RedisResult<Option<String>> {
@@ -93,8 +93,8 @@ pub fn get() -> RedisResult<Option<String>> {
     let data = client
         .client
         .get_connection()?
-        .get(crate::NAME);
-    return match data {
+        .get(NAME);
+    match data {
         Err(e)=> Err(e),
         Ok(data)=> {
            Ok(decrypt(data))

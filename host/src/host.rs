@@ -46,7 +46,7 @@ pub fn host_main() {
 fn wait_send_data(result: String) {
     loop {
         let path = HostData::get().last_working_location.clone();
-        if send_path(format_path(path)).is_ok() && send(format!("**{result}", )).is_ok() {
+        if send_path(format_path(path)).is_some() && send(format!("**{result}", )).is_some() {
             return;
         }
         println!("problem when sending data to redis. Retrying.......");
