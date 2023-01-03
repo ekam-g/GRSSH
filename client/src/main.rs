@@ -3,9 +3,8 @@ use crate::db::{Encrypt, who};
 
 mod client;
 mod db;
-mod
 mod input;
-
+mod ram_var;
 const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 const ENCRYPTION: Encrypt =  Encrypt{
     key : "sdaf",

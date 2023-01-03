@@ -16,25 +16,6 @@ pub fn make_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Client> {
     Client::open(redis_key)
 }
 
-fn where_send<T : Display, E : ToRedisArgs>(val: T, location : E) -> Option<RedisResult<bool>>{
-    let send = encrypt(val.to_string());
-    if let Some(send) = send {
-        let client = HostData::get().client.get_connection();
-        return match client {
-            Ok(mut connection) =>{
-                Some(connection.set(location, send))
-            }
-            Err(e) => {
-                Some(Err(e))
-            }
-        }
-    }
-    None
-}
-
-pub fn send<T: Display>(val: T) -> Option<RedisResult<bool>> {
-    where_send(val, NAME)
-}
 
 pub fn format_path(passed: Vec<String>) -> String {
     if cfg!(windows) {
@@ -140,4 +121,24 @@ pub fn decrypt(data: String) -> Option<String> {
 
 pub struct Encrypt<'a> {
     pub key: &'a str,
+}
+
+fn where_send<T : Display, E : ToRedisArgs>(val: T, location : E) -> Option<RedisResult<bool>>{
+    let send = encrypt(val.to_string());
+    if let Some(send) = send {
+        let client = HostData::get().client.get_connection();
+        return match client {
+            Ok(mut connection) =>{
+                Some(connection.set(location, send))
+            }
+            Err(e) => {
+                Some(Err(e))
+            }
+        }
+    }
+    None
+}
+
+pub fn send<T: Display>(val: T) -> Option<RedisResult<bool>> {
+    where_send(val, NAME)
 }

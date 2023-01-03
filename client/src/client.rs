@@ -19,8 +19,11 @@ pub fn client_main() {
             }
         };
         match error {
-            Ok(_) => {}
-            Err(_) => {
+            Some(Ok(_)) => {}
+            None => {
+                println!("error when trying to encrypt data, please check source code and report this")
+            }
+            Some(Err(_)) => {
                 println!("error when connecting to redis")
             }
         }
@@ -34,7 +37,7 @@ fn wait_for_new() -> (String, String) {
     loop {
         let data = crate::db::get();
         let path_data = crate::db::get_path();
-        if let (Ok(command), Ok(path)) = (data, path_data) {
+        if let (Ok(Some(command)), Ok(path)) = (data, path_data) {
             if command.contains("**") {
                 return (command.replace("**", ""), path);
             }
@@ -57,12 +60,15 @@ fn wait_for_new() -> (String, String) {
             } else if y_n("Command kill?(y or n)") {
                 let status = send(&"&&kill".to_owned());
                 match status {
-                    Ok(_) => {
+                    Some(Ok(_)) => {
                         println!("killing......");
                         dead_server = true;
                     }
-                    Err(oh_no) => {
+                    Some(Err(oh_no)) => {
                         println!("{oh_no}")
+                    }
+                    None => {
+                        println!("encryption error occurred, please check your key and try again")
                     }
                 }
             }
