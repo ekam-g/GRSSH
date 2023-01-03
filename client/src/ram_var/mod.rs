@@ -31,11 +31,13 @@ impl HostData {
     // this may cause errors
     pub fn get() -> MutexGuard<'static, Self> {
         loop {
-            let check = HOST_VAR.lock();
+            dbg!("trying unlock");
+            let check = HOST_VAR.try_lock();
             if let Ok(data) = check {
                 return data;
             }
-            dbg!("deadlock");
+            dbg!("deadlock, please fix");
+            panic!("");
         }
     }
 }

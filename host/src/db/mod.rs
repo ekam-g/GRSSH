@@ -95,16 +95,16 @@ pub fn encrypt(data: String) -> Option<String> {
             return None;
         }
     }
-    Some(return_data.join("/"))
+    Some(return_data.join("oifago"))
 }
 
 pub fn decrypt(data: String) -> Option<String> {
-    if !data.contains('/') {
+    if !data.contains("oifago") {
         return None;
     }
     let mut return_data: Vec<u8> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
-    for letter in data.split('/') {
+    for letter in data.split("oifago") {
         let id = encrypted_id::decrypt(letter, ENCRYPTION.key);
         if let Ok(id) = id {
             if let Ok(id) = id.to_string().parse() {

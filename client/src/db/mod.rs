@@ -10,7 +10,8 @@ use crate::ram_var::HostData;
 pub fn client() -> RedisResult<Connection> {
     try_client(HostData::get().redis_key.clone())
 }
-pub fn try_client<T : IntoConnectionInfo>(redis_key : T) -> RedisResult<Connection> {
+
+pub fn try_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Connection> {
     let redis = Client::open(redis_key)?;
     redis.get_connection()
 }
@@ -19,23 +20,23 @@ pub fn encrypt(data: String) -> Option<String> {
     let mut return_data: Vec<String> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
     for letter in data.into_bytes() {
-        let pusb_val = encrypted_id::encrypt(letter as u64, ENCRYPTION.key);
-        if let Ok(push) = pusb_val {
+        let pub_val = encrypted_id::encrypt(letter as u64, ENCRYPTION.key);
+        if let Ok(push) = pub_val {
             return_data.push(push);
         } else {
             return None;
         }
     }
-    Some(return_data.join("/"))
+    Some(return_data.join("oifago"))
 }
 
 pub fn decrypt(data: String) -> Option<String> {
-    if !data.contains('/') {
+    if !data.contains("oifago") {
         return None;
     }
     let mut return_data: Vec<u8> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
-    for letter in data.split('/') {
+    for letter in data.split("oifago") {
         let id = encrypted_id::decrypt(letter, ENCRYPTION.key);
         if let Ok(id) = id {
             if let Ok(id) = id.to_string().parse() {
@@ -54,45 +55,53 @@ pub struct Encrypt<'a> {
     pub key: &'a str,
 }
 
-fn where_send<T : Display, E : ToRedisArgs>(val: T, location : E) -> Option<RedisResult<bool>>{
+fn where_send<T: Display, E: ToRedisArgs>(val: T, location: E) -> Option<RedisResult<bool>> {
     let send = encrypt(val.to_string());
     if let Some(send) = send {
         let client = client();
         return match client {
-            Ok(mut connection) =>{
+            Ok(mut connection) => {
                 Some(connection.set(location, send))
             }
             Err(e) => {
                 Some(Err(e))
             }
-        }
+        };
     }
     None
 }
 
 pub fn send<T: Display>(val: T) -> Option<RedisResult<bool>> {
-    where_send(val, HostData::get().connect.clone())
+    let data = HostData::get();
+    let location = data.connect.clone();
+    drop(data);
+    where_send(val, location)
 }
-pub fn get_path() -> RedisResult<String> {
-    let mut  client = client()?;
-    client.get(path())
-}
-pub fn get() -> RedisResult<Option<String>> {
-    let data = client();
-    match data {
-        Ok(mut client)=> {
-            let data = client.get(HostData::get().connect.clone());
-            match data {
-                Err(e)=> Err(e),
-                Ok(data)=> {
-                    Ok(decrypt(data))
-                }
-            }
 
-        }
+pub fn get_path() -> RedisResult<Option<String>> {
+    match where_get(path()) {
         Err(e) => Err(e),
+        Ok(data) => {
+            Ok(decrypt(data))
+        }
     }
+}
 
+fn where_get<T: ToRedisArgs>(val: T) -> RedisResult<String> {
+    let mut client = client()?;
+    client.get(val)
+}
+
+pub fn get() -> RedisResult<Option<String>> {
+    let data = HostData::get();
+    let location = data.connect.clone();
+    drop(data);
+    match where_get(location) {
+        Err(e) => Err(e),
+        Ok(data) => {
+            Ok(decrypt(data))
+        }
+    }
 }
 
 pub fn path() -> String {
@@ -110,10 +119,24 @@ pub fn who() {
                 match servers {
                     Ok(mut servers) => {
                         servers.retain(|x| !x.contains("location"));
-                        println!("The Servers on: {}\n\nconnect to who?", servers.join(", "));
+                        if servers.is_empty() {
+                            no_server_exit();
+                        }
+                        let mut working_servers: Vec<String> = vec![];
+                        for server in servers.clone() {
+                            if let Ok(data) = where_get(&server) {
+                                if decrypt(data).is_some() {
+                                    working_servers.push(server)
+                                }
+                            }
+                        }
+                        if working_servers.is_empty(){
+                            no_server_exit()
+                        }
+                        println!("The Servers on: {}\n\nconnect to who?", working_servers.join(", "));
                         HostData::get().connect = crate::input::get().trim().to_owned();
                         return;
-                    },
+                    }
                     Err(e) => {
                         error = e;
                     }
@@ -129,4 +152,9 @@ pub fn who() {
     }
     println!("exiting, please read error and try to check wifi, redis server, and redis key.");
     exit(0);
+}
+
+fn no_server_exit() {
+    println!("no server found or your encryption key is not correct, please fix it and try again.");
+    exit(1)
 }

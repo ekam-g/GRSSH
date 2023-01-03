@@ -37,7 +37,7 @@ fn wait_for_new() -> (String, String) {
     loop {
         let data = crate::db::get();
         let path_data = crate::db::get_path();
-        if let (Ok(Some(command)), Ok(path)) = (data, path_data) {
+        if let (Ok(Some(command)), Ok(Some(path))) = (data, path_data) {
             if command.contains("**") {
                 return (command.replace("**", ""), path);
             }

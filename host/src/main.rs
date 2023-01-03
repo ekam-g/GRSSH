@@ -14,7 +14,7 @@ const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 const LOG: bool = true;
 const NAME: &str = "fedora";
 const ENCRYPTION: Encrypt =  Encrypt{
-    key : "sdaf",
+    key : "hello",
 };
 
 fn main() {
