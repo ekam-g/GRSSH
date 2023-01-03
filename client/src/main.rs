@@ -15,16 +15,7 @@ const ENCRYPTION: Encrypt =  Encrypt{
 
 
 fn main(){
-    test();
     println!("starting client version");
     who();
     client_main()
-}
-
-
-fn test() {
-    loop {
-        let cool = send("hello");
-        dbg!(get()).expect("TODO: panic message");
-    }
 }
