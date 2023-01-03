@@ -29,7 +29,7 @@ pub fn send_path(val: String) -> Option<RedisResult<bool>> {
 }
 
 pub fn path() -> String {
-    format!("{}location", NAME)
+    format!("{NAME}location")
 }
 
 pub fn get_path(redis_location: String) -> Vec<String> {
@@ -66,7 +66,7 @@ pub fn get_path(redis_location: String) -> Vec<String> {
 
 fn set_unknown(mut good_client: Client) {
     let _: RedisResult<bool> = good_client.set(NAME, encrypt("**unable to find old path, please cd into home directory".to_owned()));
-    let _: RedisResult<bool> = good_client.set(format!("{}location", NAME), encrypt("/".to_owned()));
+    let _: RedisResult<bool> = good_client.set(format!("{NAME}location"), encrypt("/".to_owned()));
 }
 
 pub fn get() -> RedisResult<Option<String>> {
