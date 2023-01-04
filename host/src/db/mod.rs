@@ -40,23 +40,21 @@ pub fn get_path(redis_location: String) -> Vec<String> {
         if let Ok(mut good_client) = client {
             match good_client.get(path()) {
                 Ok(data) => {
-                    let check: String = data;
-                    if fs::read_dir(check.clone()).is_ok() {
-                        for path in check.split('/') {
-                            return_val.push(path.to_owned());
+                    let check  = decrypt(data);
+                    if let Some(check) = check {
+                        if fs::read_dir(check.clone()).is_ok() {
+                            for path in check.split('/') {
+                                return_val.push(path.to_owned());
+                            }
+                            return return_val;
                         }
-                        return return_val;
                     }
-                    println!("unable to find old path, please cd into home directory");
-                    set_unknown(good_client);
-                    return vec![];
+                    return set_unknown(good_client);
                 }
                 Err(_) => {
                     err += 1;
                     if err == 30 {
-                        println!("unable to find old path, please cd into home directory");
-                        set_unknown(good_client);
-                        return vec![];
+                        return set_unknown(good_client);
                     }
                 }
             }
@@ -64,18 +62,16 @@ pub fn get_path(redis_location: String) -> Vec<String> {
     }
 }
 
-fn set_unknown(mut good_client: Client) {
+fn set_unknown(mut good_client: Client) -> Vec<String> {
+    println!("unable to find old path, please cd into home directory");
     let _: RedisResult<bool> = good_client.set(NAME, encrypt("**unable to find old path, please cd into home directory".to_owned()));
     let _: RedisResult<bool> = good_client.set(format!("{NAME}location"), encrypt("/".to_owned()));
+    vec![]
 }
 
 pub fn get() -> RedisResult<Option<String>> {
-    let client = HostData::get();
-    let data = client
-        .client
-        .get_connection()?
-        .get(NAME);
-    match data {
+    let client = HostData::get_client().get_connection()?.get(NAME);
+    match client {
         Err(e)=> Err(e),
         Ok(data)=> {
            Ok(decrypt(data))
@@ -99,9 +95,6 @@ pub fn encrypt(data: String) -> Option<String> {
 }
 
 pub fn decrypt(data: String) -> Option<String> {
-    if !data.contains("oifago") {
-        return None;
-    }
     let mut return_data: Vec<u8> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
     for letter in data.split("oifago") {
@@ -126,7 +119,7 @@ pub struct Encrypt<'a> {
 fn where_send<T : Display, E : ToRedisArgs>(val: T, location : E) -> Option<RedisResult<bool>>{
     let send = encrypt(val.to_string());
     if let Some(send) = send {
-        let client = HostData::get().client.get_connection();
+        let client = HostData::get_client().get_connection();
         return match client {
             Ok(mut connection) =>{
                 Some(connection.set(location, send))

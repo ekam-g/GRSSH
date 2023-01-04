@@ -1,41 +1,104 @@
-ls
+commmand=logs
 
-ls
+commmand=logs
 
-neofetch
+command-logs
 
-sleep 20
+command-logs
 
-kill
-cd -
-
-cd 
-
-cd home
-
-cd carghai
-
-cd 
-
-view-logs
-
-command-sleep 1
-
-kill
+command-logs
 
 ls
 
 ls
 
-end
+ls
 
-kill-server
+ls
 
-shutdown
+ls
 
-sudo rm
+ls
 
-sudo reboot now
+ls
 
-kill
-kill
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+l
+
+l
+
+sls
+
+sls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+
+ls
+

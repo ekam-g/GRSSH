@@ -11,7 +11,7 @@ pub struct HostData {
     pub kill_thread: bool,
     pub location: Vec<String>,
     pub last_working_location: Vec<String>,
-    pub client : Client,
+    redis_key: String,
 }
 
 pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
@@ -27,17 +27,8 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
             }
         }
     };
-    let client = {
-        match make_client(_data.clone()) {
-            Ok(good) => good,
-            Err(e) =>{
-                println!("failed trying to make redis client make sure you wifi set and your redis key is good\n{e}");
-                exit(1);
-            }
-        }
-    };
     let location  = {
-        let mut _location = crate::db::get_path(_data);
+        let mut _location = crate::db::get_path(_data.clone());
         _location.retain( | x| ! x.is_empty());
         _location
     };
@@ -46,8 +37,21 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
         kill_thread: false,
         location: location.clone(),
         last_working_location: location,
-        client
+        redis_key : _data,
     })
+});
+
+
+pub static REDIS_CLIENT: Lazy<Mutex<Client>> = Lazy::new(|| {
+    Mutex::new(
+        match make_client(HostData::get().redis_key.clone()) {
+            Ok(good) => good,
+            Err(e) =>{
+                println!("failed trying to make redis client make sure you wifi set and your redis key is good\n{e}");
+                exit(1);
+            }
+        }
+    )
 });
 
 impl HostData {
@@ -57,6 +61,15 @@ impl HostData {
             let check = HOST_VAR.try_lock();
             if let Ok(data) = check {
                 return data;
+            }
+            dbg!("dead lock problem");
+        }
+    }
+    pub fn get_client() -> Client {
+        loop {
+            let check = REDIS_CLIENT.try_lock();
+            if let Ok(data) = check {
+                return data.clone();
             }
             dbg!("dead lock problem");
         }

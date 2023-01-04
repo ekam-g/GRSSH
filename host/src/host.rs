@@ -45,7 +45,9 @@ pub fn host_main() {
 
 fn wait_send_data(result: String) {
     loop {
-        let path = HostData::get().last_working_location.clone();
+        let pub_var  = HostData::get();
+        let path = pub_var.last_working_location.clone();
+        drop(pub_var);
         if send_path(format_path(path)).is_some() && send(format!("**{result}", )).is_some() {
             return;
         }

@@ -1,8 +1,10 @@
+#![feature(test)]
 extern crate core;
+extern crate test;
 
 use crate::client::client_main;
 use crate::db::{Encrypt, get, send, who};
-use crate::ram_var::HostData;
+
 
 mod client;
 mod db;

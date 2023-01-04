@@ -31,9 +31,6 @@ pub fn encrypt(data: String) -> Option<String> {
 }
 
 pub fn decrypt(data: String) -> Option<String> {
-    if !data.contains("oifago") {
-        return None;
-    }
     let mut return_data: Vec<u8> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
     for letter in data.split("oifago") {
@@ -134,8 +131,14 @@ pub fn who() {
                             no_server_exit()
                         }
                         println!("The Servers on: {}\n\nconnect to who?", working_servers.join(", "));
-                        HostData::get().connect = crate::input::get().trim().to_owned();
-                        return;
+                        loop {
+                            let user_input = crate::input::get().trim().to_owned();
+                            if working_servers.contains(&user_input) {
+                                HostData::get().connect = user_input;
+                                return;
+                            }
+                            println!("bad name please try again")
+                        }
                     }
                     Err(e) => {
                         error = e;
