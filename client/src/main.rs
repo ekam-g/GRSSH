@@ -3,7 +3,7 @@ extern crate core;
 extern crate test;
 
 use crate::client::client_main;
-use crate::db::{Encrypt, get, send, who};
+use crate::db::{who};
 
 mod config;
 mod client;
