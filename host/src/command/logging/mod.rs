@@ -3,7 +3,7 @@ pub struct Log {}
 impl Log {
     //noinspection RsConstantConditionIf
     pub fn write(info: String) {
-        if crate::LOG {
+        if crate::config::LOG {
             let log_try = txt_writer::WriteData {}.add(&info, "log.txt");
             if let Err(e) = log_try {
                 println!("failed when logging, trying to recover\n{e}");
@@ -27,7 +27,7 @@ impl Log {
     //noinspection RsConstantConditionIf
     pub fn read(command: &str) -> Option<String> {
         if command.contains("view-logs") {
-            return if crate::LOG {
+            return if crate::config::LOG {
                 let reader = txt_writer::ReadData {};
                 let error = reader.read_one("log.txt");
                 match error {

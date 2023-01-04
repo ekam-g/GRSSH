@@ -4,7 +4,7 @@ use std::fs;
 use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
 use redis::{Client, Commands};
 
-use crate::{ENCRYPTION, NAME};
+use crate::config::{ENCRYPTION, NAME};
 use crate::ram_var::HostData;
 
 pub mod get_command_thread;

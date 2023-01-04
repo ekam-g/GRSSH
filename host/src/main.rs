@@ -1,22 +1,14 @@
 extern crate core;
 
 use std::process::exit;
-use crate::db::{Encrypt};
+use config::NAME;
 use crate::host::host_main;
 
 mod command;
 mod db;
 mod host;
 pub mod ram_var;
-
-const SHELL: &str = "zsh";
-const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
-const LOG: bool = true;
-const NAME: &str = "fedora";
-const ENCRYPTION: Encrypt =  Encrypt{
-    key : "hello",
-    encryption_on : false
-};
+mod config;
 
 fn main() {
     if NAME.contains("location") {

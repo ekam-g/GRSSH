@@ -4,7 +4,7 @@ use std::thread;
 use std::time::Duration;
 use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
 use redis::{Client, Commands, Connection};
-use crate::ENCRYPTION;
+use crate::config::ENCRYPTION;
 use crate::ram_var::HostData;
 
 pub fn client() -> RedisResult<Connection> {

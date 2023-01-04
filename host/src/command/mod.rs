@@ -42,10 +42,10 @@ pub fn exc(what: String) -> String {
         }
         Err(error) => {
             let run = {
-                if crate::SHELL.is_empty() {
+                if crate::config::SHELL.is_empty() {
                     os_try(file, what)
                 } else {
-                    Command::new(crate::SHELL)
+                    Command::new(crate::config::SHELL)
                         .current_dir(file)
                         .args(["/C"])
                         .args(what.split_whitespace())
