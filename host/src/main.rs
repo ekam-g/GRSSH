@@ -15,6 +15,7 @@ const LOG: bool = true;
 const NAME: &str = "fedora";
 const ENCRYPTION: Encrypt =  Encrypt{
     key : "hello",
+    encryption_on : false
 };
 
 fn main() {

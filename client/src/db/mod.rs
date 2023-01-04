@@ -17,6 +17,9 @@ pub fn try_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Connection
 }
 
 pub fn encrypt(data: String) -> Option<String> {
+    if !ENCRYPTION.encryption_on {
+        return Some(data);
+    }
     let mut return_data: Vec<String> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
     for letter in data.into_bytes() {
@@ -31,6 +34,9 @@ pub fn encrypt(data: String) -> Option<String> {
 }
 
 pub fn decrypt(data: String) -> Option<String> {
+    if !ENCRYPTION.encryption_on {
+        return Some(data);
+    }
     let mut return_data: Vec<u8> = vec![];
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
     for letter in data.split("oifago") {
@@ -50,6 +56,7 @@ pub fn decrypt(data: String) -> Option<String> {
 
 pub struct Encrypt<'a> {
     pub key: &'a str,
+    pub encryption_on: bool,
 }
 
 fn where_send<T: Display, E: ToRedisArgs>(val: T, location: E) -> Option<RedisResult<bool>> {
@@ -127,7 +134,7 @@ pub fn who() {
                                 }
                             }
                         }
-                        if working_servers.is_empty(){
+                        if working_servers.is_empty() {
                             no_server_exit()
                         }
                         println!("The Servers on: {}\n\nconnect to who?", working_servers.join(", "));

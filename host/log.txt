@@ -102,3 +102,11 @@ ls
 
 ls
 
+ls
+
+cd Users
+
+cd ekam
+
+cd IdeaProjects
+
