@@ -8,6 +8,7 @@ use crate::config::{ENCRYPTION, NAME};
 use crate::ram_var::HostData;
 
 pub mod get_command_thread;
+pub mod sentry_logging;
 
 
 //TODO refactor soon

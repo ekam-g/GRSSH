@@ -3,7 +3,7 @@ pub const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 //encryption settings 
 pub const ENCRYPTION: crate::db::Encrypt =  crate::db::Encrypt{
     //your encryption key
-    key : "hello",
+    key : "audi",
     //if you want encryption
-    encryption_on : false
+    encryption_on : true
 };
