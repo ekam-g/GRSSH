@@ -37,9 +37,9 @@ fn wait_for_new() -> (String, String) {
     loop {
         let data = crate::db::get();
         let path_data = crate::db::get_path();
-        if let (Ok(Some(command)), Ok(Some(path))) = (data, path_data) {
+        if let (Ok(Some(command)), Ok(Some(path))) = (&data, &path_data) {
             if command.contains("**") {
-                return (command.replace("**", ""), path);
+                return (command.replace("**", ""), path.to_owned());
             }
             if command.contains("$$") {
                 if !dead_server {
@@ -48,6 +48,10 @@ fn wait_for_new() -> (String, String) {
                 }
                 time_secs = Instant::now();
             }
+        } else if let Ok(None) = data{
+            return ("encryption error".to_owned(), "error".to_owned());
+        } else  if let Ok(None) = path_data {
+            return ("encryption error".to_owned(), "error".to_owned());
         }
         if time_secs.elapsed() > Duration::from_secs(8) {
             if dead_server{
