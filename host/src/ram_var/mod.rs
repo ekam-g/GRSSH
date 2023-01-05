@@ -5,7 +5,6 @@ use redis::Client;
 
 use txt_writer;
 use crate::db::make_client;
-use crate::db::sentry_logging::enable_sentry;
 
 pub struct HostData {
     pub data: String,
@@ -41,11 +40,6 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
         redis_key : _data,
     })
 });
-
-
-// pub static _PANIC_WATCHER: Lazy<Option<sentry::ClientInitGuard>> = Lazy::new(|| {
-//     enable_sentry()
-// });
 
 pub static REDIS_CLIENT: Lazy<Mutex<Client>> = Lazy::new(|| {
     Mutex::new(

@@ -7,7 +7,6 @@ use crate::db::get_command_thread::{check_command, get_command};
 use crate::ram_var::HostData;
 
 pub fn host_main() {
-    panic!("yourmom");
     loop {
         reset();
         let data = get_command();
