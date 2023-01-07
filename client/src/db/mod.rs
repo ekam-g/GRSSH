@@ -51,7 +51,14 @@ pub fn decrypt(data: String) -> Option<String> {
             return None;
         }
     }
-    Some(String::from_utf8(return_data).unwrap())
+    match String::from_utf8(return_data){
+        Ok(data) => {
+            Some(data)
+        }
+        Err(_) => {
+            None
+        }
+    }
 }
 
 pub struct Encrypt<'a> {

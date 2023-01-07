@@ -11,8 +11,10 @@ pub fn enable_sentry() -> Option<sentry::ClientInitGuard> {
             release: sentry::release_name!(),
             ..Default::default()
         }));
+        info!("Sentry Successfully Turned On and Running!\n");
         return Some(guard);
     }
+    info!("Sentry Startup Ignored(as set in config.rs)!\n");
     None
 }
 

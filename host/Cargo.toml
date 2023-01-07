@@ -11,3 +11,5 @@ once_cell = "1.16.0"
 txt_writer = "0.1.4"
 encrypted_id = "0.1.5"
 sentry = "0.29.1"
+log = { version = "^0.4.14", features = ["std"] }
+env_logger = "0.10.0"

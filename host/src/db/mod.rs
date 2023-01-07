@@ -5,7 +5,7 @@ use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
 use redis::{Client, Commands};
 
 use crate::config::{ENCRYPTION, NAME};
-use crate::ram_var::HostData;
+use crate::ram_var::{ERRORS, HostData};
 
 pub mod get_command_thread;
 pub mod sentry_logging;
@@ -42,19 +42,25 @@ pub fn get_path(redis_location: String) -> Vec<String> {
         if let Ok(mut good_client) = client {
             match good_client.get(path()) {
                 Ok(data) => {
-                    let check  = decrypt(data);
+                    let check = decrypt(data);
                     if let Some(check) = check {
-                        if fs::read_dir(check.clone()).is_ok() {
-                            for path in check.split('/') {
-                                return_val.push(path.to_owned());
+                        match fs::read_dir(check.clone()) {
+                            Ok(_) => {
+                                for path in check.split('/') {
+                                    return_val.push(path.to_owned());
+                                }
+                                return return_val;
+                            },
+                            Err(e) => {
+                                error!("Failed to enter path {} because {}\n", check, e);
                             }
-                            return return_val;
                         }
                     }
                     return set_unknown(good_client);
                 }
-                Err(_) => {
+                Err(e) => {
                     err += 1;
+                    warn!("Failed when finding old path. Retrying {}.....\n{}\n", err, e);
                     if err == 30 {
                         return set_unknown(good_client);
                     }
@@ -65,8 +71,8 @@ pub fn get_path(redis_location: String) -> Vec<String> {
 }
 
 fn set_unknown(mut good_client: Client) -> Vec<String> {
-    println!("unable to find old path, please cd into home directory");
-    let _: RedisResult<bool> = good_client.set(NAME, encrypt("**unable to find old path, please cd into home directory".to_owned()));
+    warn!("unable to use old path, creating new path\n");
+    let _: RedisResult<bool> = good_client.set(NAME, encrypt("**unable to find old path".to_owned()));
     let _: RedisResult<bool> = good_client.set(format!("{NAME}location"), encrypt("/".to_owned()));
     vec![]
 }
@@ -74,12 +80,14 @@ fn set_unknown(mut good_client: Client) -> Vec<String> {
 pub fn get() -> RedisResult<Option<String>> {
     let client = HostData::get_client().get_connection()?.get(NAME);
     match client {
-        Err(e)=> Err(e),
-        Ok(data)=> {
-           Ok(decrypt(data))
+        Err(e) => {
+            error!("{}\n{}\n", ERRORS.redis_get_error, e);
+            Err(e)
+        },
+        Ok(data) => {
+            Ok(decrypt(data))
         }
     }
-
 }
 
 pub fn encrypt(data: String) -> Option<String> {
@@ -90,10 +98,14 @@ pub fn encrypt(data: String) -> Option<String> {
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
     for letter in data.into_bytes() {
         let pub_val = encrypted_id::encrypt(letter as u64, ENCRYPTION.key);
-        if let Ok(push) = pub_val {
-            return_data.push(push);
-        } else {
-            return None;
+        match pub_val {
+            Ok(push) => {
+                return_data.push(push);
+            }
+            Err(e) => {
+                error!("failed when encrypting data\n{}\n", e);
+                return None;
+            }
         }
     }
     Some(return_data.join("oifago"))
@@ -107,17 +119,30 @@ pub fn decrypt(data: String) -> Option<String> {
     encrypted_id::init("df(vh!3*8e21@qca#3)w#7ta*z#!bhsde43&#iez3sf5m1#h61");
     for letter in data.split("oifago") {
         let id = encrypted_id::decrypt(letter, ENCRYPTION.key);
-        if let Ok(id) = id {
-            if let Ok(id) = id.to_string().parse() {
-                return_data.push(id)
-            } else {
+        match id {
+            Ok(id) => {
+                if let Ok(id) = id.to_string().parse() {
+                    return_data.push(id)
+                } else {
+                    error!("utf8 decryption error occurred");
+                    return None;
+                }
+            }
+            Err(e) => {
+                error!("failed when decrypting data\n{}\n", e);
                 return None;
             }
-        } else {
-            return None;
         }
     }
-    Some(String::from_utf8(return_data).unwrap())
+    match String::from_utf8(return_data){
+        Ok(data) => {
+            Some(data)
+        }
+        Err(e) => {
+            error!("utf8 decryption error occurred\n{}\n", e);
+            None
+        }
+    }
 }
 
 pub struct Encrypt<'a> {
@@ -126,18 +151,19 @@ pub struct Encrypt<'a> {
 }
 
 
-fn where_send<T : Display, E : ToRedisArgs>(val: T, location : E) -> Option<RedisResult<bool>>{
+fn where_send<T: Display, E: ToRedisArgs>(val: T, location: E) -> Option<RedisResult<bool>> {
     let send = encrypt(val.to_string());
     if let Some(send) = send {
         let client = HostData::get_client().get_connection();
         return match client {
-            Ok(mut connection) =>{
+            Ok(mut connection) => {
                 Some(connection.set(location, send))
             }
             Err(e) => {
+                error!("failed when sending data to redis\n{}\n", e);
                 Some(Err(e))
             }
-        }
+        };
     }
     None
 }

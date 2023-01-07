@@ -4,8 +4,10 @@ use std::time::{Duration, Instant};
 
 use crate::command::logging::Log;
 use crate::db;
+use crate::ram_var::ERRORS;
 
 pub fn get_command() -> Result<String, String> {
+    let mut wait_long = false;
     let sleep = Instant::now();
     let mut sleep_time: u16 = 2;
     loop {
@@ -13,7 +15,9 @@ pub fn get_command() -> Result<String, String> {
         if let Some(check) = check {
             return check;
         }
-        if sleep.elapsed() > Duration::from_secs(360) {
+        if sleep.elapsed() > Duration::from_secs(360) && !wait_long {
+            warn!("Server Entering Power Saver Mode\n");
+            wait_long = true;
             sleep_time = 5000;
         }
         thread::sleep(Duration::from_millis(sleep_time as u64))
@@ -68,7 +72,7 @@ fn cd_command(good: String) -> String {
     }
     data.last_working_location.retain(|x| !x.is_empty());
     data.location.retain(|x| !x.is_empty());
-    println!("changing location to {}", &data.location.join("/"));
+    info!("changing location to {}\n", &data.location.join("/"));
     "ls".to_owned()
 }
 
@@ -76,7 +80,7 @@ fn end_check_or_sleep(data: &str) -> Option<()> {
     if data == "&&quit" {
         loop {
             if db::send("**server shutting down").is_some() {
-                println!("server shutting down");
+                warn!("server shutting down\n");
                 exit(1);
             }
             thread::sleep(Duration::from_secs(1));
@@ -89,8 +93,9 @@ fn end_check_or_sleep(data: &str) -> Option<()> {
                 let sleep_time: u64 = sleep;
                 loop {
                     if db::send("$$server sleeping").is_some() {
-                        println!("server sleeping for {sleep_time} min");
+                        warn!("server sleeping for {sleep_time} min\n");
                         thread::sleep(Duration::from_secs(sleep_time * 60));
+                        warn!("Server Back Online\n");
                         return Some(());
                     }
                     thread::sleep(Duration::from_secs(1));

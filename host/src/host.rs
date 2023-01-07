@@ -4,22 +4,24 @@ use std::time::Duration;
 use crate::command::exc;
 use crate::db::{format_path, send, send_path};
 use crate::db::get_command_thread::{check_command, get_command};
-use crate::ram_var::HostData;
+use crate::ram_var::{ERRORS, HostData};
 
 pub fn host_main() {
+    info!("Global SSH Server Is Successfully Turned On\n");
     loop {
         reset();
+        info!("Waiting for Command.....\n");
         let data = get_command();
         let _ = send("read");
         let send_data: String;
         match data {
             Ok(data) => {
-                println!("running command {}", &data);
+                info!("running command {}\n", &data);
                 let thread_worker = thread::spawn(move || {
                     let result = exc(data);
                     let mut pub_data = HostData::get();
                     pub_data.data = result;
-                    println!("finished command\n {}", &pub_data.data);
+                    info!("Finished Command, Data is\n {}\n", &pub_data.data);
                 });
                 let result: String = loop {
                     if thread_worker.is_finished() {
@@ -27,7 +29,7 @@ pub fn host_main() {
                     }
                     if let Some(Ok(kill)) = check_command() {
                         if kill == *"kill" {
-                            println!("process killed");
+                            warn!("process killed\n");
                             break "killed".to_owned();
                         }
                     }
@@ -51,7 +53,7 @@ fn wait_send_data(result: String) {
         if send_path(format_path(path)).is_some() && send(format!("**{result}", )).is_some() {
             return;
         }
-        println!("problem when sending data to redis. Retrying.......");
+        error!("{}", ERRORS.redis_send_error);
         thread::sleep(Duration::from_secs(1));
     }
 }

@@ -75,3 +75,12 @@ impl HostData {
     }
 }
 
+pub struct Errors<'a> {
+    pub redis_send_error : &'a str,
+    pub redis_get_error : &'a str,
+}
+
+pub const ERRORS: Errors = Errors  {
+    redis_get_error : "Failed to Get Data From Redis, Retrying.......\n",
+    redis_send_error: "Failed to Send Data to Redis, Retrying......\n",
+};

@@ -28,6 +28,7 @@ pub fn exc(what: String) -> String {
         if fs::read_dir(format_path(path.location.clone())).is_err() {
             path.location = path.last_working_location.clone();
         }else {
+            error!("Path tried by user failed, switching to old path\n");
             path.last_working_location = path.location.clone();
         }
 
