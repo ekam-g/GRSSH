@@ -4,7 +4,6 @@ use std::time::{Duration, Instant};
 
 use crate::command::logging::Log;
 use crate::db;
-use crate::ram_var::ERRORS;
 
 pub fn get_command() -> Result<String, String> {
     let mut wait_long = false;

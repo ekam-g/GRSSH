@@ -5,18 +5,18 @@ use crate::db;
 
 pub fn check() {
     if LOG {
-        if  env_logger::builder().try_init().is_err() {
-            show_error();
-        }
         match env::var("RUST_LOG") {
             Ok(data) => {
                 if !data.contains("trace") {
                     show_error();
                 }
             }
-            Err(failed) => {
-                println!("failed when reading RUST_LOG env var please set it\n{failed}")
+            Err(_) => {
+                env::set_var("RUST_LOG", "trace");
             }
+        }
+        if  env_logger::builder().try_init().is_err() {
+            show_error();
         }
     }
     if NAME.contains("location") {
