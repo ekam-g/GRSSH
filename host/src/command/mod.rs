@@ -28,10 +28,12 @@ pub fn exc(what: String) -> String {
     };
     let file: String = {
         let mut path = HostData::get();
-        if fs::read_dir(format_path(path.location.clone())).is_err() {
-            error!("Path tried by user failed, switching to old path\n");
+        let formatted_path = format_path(path.location.clone());
+        if fs::read_dir(&formatted_path).is_err() {
+            error!("Path tried by user failed, switching to old path\n{}\n", formatted_path);
             path.location = path.last_working_location.clone();
         }else {
+            info!("Current Path is: {}", formatted_path);
             path.last_working_location = path.location.clone();
         }
 

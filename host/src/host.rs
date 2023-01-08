@@ -1,10 +1,11 @@
-use std::thread;
-use std::time::Duration;
+use std::{thread};
+use std::time::{Duration, Instant};
 
 use crate::command::exc;
+use crate::db;
+use crate::db::get_command_thread::{get_command};
 use crate::db::{format_path, send, send_path};
-use crate::db::get_command_thread::{check_command, get_command};
-use crate::ram_var::{ERRORS, HostData};
+use crate::ram_var::{HostData, ERRORS};
 
 pub fn host_main() {
     info!("Global SSH Server Is Successfully Turned On\n");
@@ -12,7 +13,6 @@ pub fn host_main() {
         reset();
         info!("Waiting for Command.....\n");
         let data = get_command();
-        let _ = send("read");
         let send_data: String;
         match data {
             Ok(data) => {
@@ -23,14 +23,17 @@ pub fn host_main() {
                     pub_data.data = result;
                     info!("Finished Command, Data is\n {}\n", &pub_data.data);
                 });
+                let time_passed = Instant::now();
                 let result: String = loop {
                     if thread_worker.is_finished() {
                         break HostData::get().data.clone();
                     }
-                    if let Some(Ok(kill)) = check_command() {
-                        if kill == *"kill" {
-                            warn!("process killed\n");
-                            break "killed".to_owned();
+                    if time_passed.elapsed() > Duration::from_secs(7) {
+                        if let Ok(Some(kill)) = db::get() {
+                            if kill == *"&&kill" {
+                                warn!("process killed\n");
+                                break "killed".to_owned();
+                            }
                         }
                     }
                 };
@@ -44,10 +47,9 @@ pub fn host_main() {
     }
 }
 
-
 fn wait_send_data(result: String) {
     loop {
-        let pub_var  = HostData::get();
+        let pub_var = HostData::get();
         let path = pub_var.last_working_location.clone();
         drop(pub_var);
         if send_path(format_path(path)).is_some() && send(format!("**{result}", )).is_some() {
