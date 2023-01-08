@@ -1,8 +1,11 @@
 pub mod logging;
+pub mod special;
 
 use std::io::Error;
-use std::fs;
+use std::{fs};
 use std::process::{Command, Output};
+
+
 use crate::db::format_path;
 
 
@@ -26,9 +29,9 @@ pub fn exc(what: String) -> String {
     let file: String = {
         let mut path = HostData::get();
         if fs::read_dir(format_path(path.location.clone())).is_err() {
+            error!("Path tried by user failed, switching to old path\n");
             path.location = path.last_working_location.clone();
         }else {
-            error!("Path tried by user failed, switching to old path\n");
             path.last_working_location = path.location.clone();
         }
 

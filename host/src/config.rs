@@ -11,7 +11,7 @@ pub const ENCRYPTION: crate::db::Encrypt =  crate::db::Encrypt{
     //your encryption key
     key : "hello",
     //if you want encryption
-    encryption_on : false
+    encryption_on : true
 };
 // If you want sentry_logging logging information put your key here
 pub const SENTRY: crate::db::sentry_logging::Sentry = crate::db::sentry_logging::Sentry {

@@ -1,9 +1,10 @@
-use std::process::exit;
+
 use std::thread;
 use std::time::{Duration, Instant};
 
 use crate::command::logging::Log;
-use crate::db;
+use crate::{db};
+use crate::command::special;
 
 pub fn get_command() -> Result<String, String> {
     let mut wait_long = false;
@@ -32,7 +33,7 @@ pub fn check_command() -> Option<Result<String,String>> {
                 Log::write(log);
             });
             let view = good.trim();
-            if end_check_or_sleep(view).is_some() {
+            if special::end_check_or_sleep(view).is_some() {
                 return Some(Err("Server back Online".to_owned()));
             }
             if let Some(data) = Log::read(view){
@@ -44,62 +45,7 @@ pub fn check_command() -> Option<Result<String,String>> {
             thread::spawn(move || {
                 Log::write(log);
             });
-            return Some(Ok(cd_command(good)));
-        }
-    }
-    None
-}
-
-
-fn cd_command(good: String) -> String {
-    let mut data = crate::ram_var::HostData::get();
-    if good.contains("cd -") {
-        let remove_location = data.location.len() - 1;
-        if data.location.get(remove_location).is_some() {
-            let remove = &data.location[remove_location].clone();
-            data.location.retain(|x| x != remove);
-        }
-    } else if good.contains("cd ~") {
-        data.location = vec![];
-        for path in good.split('/') {
-            data.location.push(path.to_owned());
-        }
-    } else if good.replace("%%", "").trim() == "cd" {
-        data.location = vec![];
-    } else {
-        data.location.push(good.replace("%%", "").replace("cd", "").trim().to_owned());
-    }
-    data.last_working_location.retain(|x| !x.is_empty());
-    data.location.retain(|x| !x.is_empty());
-    info!("changing location to {}\n", &data.location.join("/"));
-    "ls".to_owned()
-}
-
-fn end_check_or_sleep(data: &str) -> Option<()> {
-    if data == "&&quit" {
-        loop {
-            if db::send("**server shutting down").is_some() {
-                warn!("server shutting down\n");
-                exit(1);
-            }
-            thread::sleep(Duration::from_secs(1));
-        }
-    }
-    if data.contains("command-sleep") {
-        let split = data.split(' ').nth(1);
-        if let Some(sleep_amount_unchecked) = split {
-            if let Ok(sleep) = sleep_amount_unchecked.parse() {
-                let sleep_time: u64 = sleep;
-                loop {
-                    if db::send("$$server sleeping").is_some() {
-                        warn!("server sleeping for {sleep_time} min\n");
-                        thread::sleep(Duration::from_secs(sleep_time * 60));
-                        warn!("Server Back Online\n");
-                        return Some(());
-                    }
-                    thread::sleep(Duration::from_secs(1));
-                }
-            }
+            return Some(Ok(special::cd_command(good)));
         }
     }
     None
