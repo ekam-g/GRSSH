@@ -2,7 +2,7 @@ use std::{thread};
 use std::process::exit;
 use std::time::{Duration, Instant};
 
-use crate::db::send;
+use crate::db::{delete_key, send};
 use crate::input::{get, y_n};
 use crate::ram_var::HostData;
 
@@ -33,6 +33,7 @@ pub fn client_main() {
 fn wait_for_new() -> (String, String) {
     let mut tried: i8 = 0;
     let mut dead_server: bool = false;
+    let mut method: bool = false;
     let mut time_secs = Instant::now();
     loop {
         let data = crate::db::get();
@@ -56,6 +57,14 @@ fn wait_for_new() -> (String, String) {
         if time_secs.elapsed() > Duration::from_secs(8) {
             if dead_server{
                 println!("host pc might be dead or not responding, waiting: {tried}.........\n");
+                let _ = delete_key();
+                if method {
+                    method = false;
+                    let _ = send("&&kill");
+                } else {
+                    method = true;
+                    let _ = send("&&ls");
+                }
                 tried += 1;
                 if tried > 65 {
                     println!("no response received from host, shutting off");
@@ -69,7 +78,7 @@ fn wait_for_new() -> (String, String) {
                         dead_server = true;
                     }
                     Some(Err(oh_no)) => {
-                        println!("{oh_no}")
+                        println!("Redis send data error\n{oh_no}")
                     }
                     None => {
                         println!("encryption error occurred, please check your key and try again")

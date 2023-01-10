@@ -2,7 +2,8 @@
 mod test {
 
     use test::Bencher;
-    use crate::db::{decrypt, encrypt, get, get_path};
+    use crate::db::{decrypt, encrypt};
+    
 
 
     #[bench]
@@ -15,5 +16,9 @@ mod test {
         // let fetch= get();
         // let path = get_path();
         // panic!("{:#?}, {:#?}", fetch.unwrap(), path.unwrap());
+    }
+    #[test]
+    fn check() {
+        panic!("{}", encrypt("&&ls".to_owned()).unwrap());
     }
 }

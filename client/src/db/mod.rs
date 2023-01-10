@@ -11,6 +11,20 @@ pub fn client() -> RedisResult<Connection> {
     try_client(HostData::get().redis_key.clone())
 }
 
+pub fn delete_key() -> RedisResult<bool> {
+    let data = HostData::get();
+    let location = data.connect.clone();
+    drop(data);
+    match client() {
+        Ok(mut e) => {
+            e.del(location)
+        }
+        Err(e) => {
+            Err(e)
+        }
+    }
+}
+
 pub fn try_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Connection> {
     let redis = Client::open(redis_key)?;
     redis.get_connection()
