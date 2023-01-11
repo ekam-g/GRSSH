@@ -31,7 +31,6 @@ pub fn exc(what: String) -> String {
                 return_val.push(vec![]);
                 return_val[word_letter].push(letter.to_owned());
             }
-            dbg!(letter, quote, word_letter);
         }
         let mut return_vec = vec![];
         for word in return_val {
@@ -47,7 +46,6 @@ pub fn exc(what: String) -> String {
     if let Some((new_run, _overwrite, _file_name)) = special::write_command(run.clone()) {
         run = new_run;
         file_name = _file_name;
-        dbg!(&file_name);
         overwrite = _overwrite;
         write = true;
     } else {
@@ -62,7 +60,6 @@ pub fn exc(what: String) -> String {
         rest.retain(|x| x != &first_letter);
         (first_letter, rest)
     };
-    dbg!(&first, &last);
     let file: String = {
         let mut path = HostData::get();
         let formatted_path = format_path(path.location.clone());
