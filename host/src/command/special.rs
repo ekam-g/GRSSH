@@ -2,6 +2,8 @@ use std::process::exit;
 use std::thread;
 use std::time::Duration;
 use crate::db;
+use crate::db::format_path;
+use crate::ram_var::HostData;
 
 pub fn cd_command(good: String) -> String {
     let mut data = crate::ram_var::HostData::get();
@@ -52,6 +54,27 @@ pub fn end_check_or_sleep(data: &str) -> Option<()> {
                     thread::sleep(Duration::from_secs(1));
                 }
             }
+        }
+    }
+    None
+}
+
+
+pub fn write_command(mut run: Vec<String>) -> Option<(Vec<String>, bool, String)> {
+    let write = format_path(HostData::get().location.clone());
+    if run.contains(&">>".to_owned()){
+        run.retain(|x| x != ">>");
+        let compare = run.clone();
+        if let Some(compare) = compare.last() {
+            run.retain(|x| x != compare);
+            return Some((run, false, format!("{write}/{compare}")))
+        }
+    }else if run.contains(&">".to_owned())  {
+        run.retain(|x| x != ">");
+        let compare = run.clone();
+        if let Some(compare) = compare.last() {
+            run.retain(|x| x != compare);
+            return Some((run, true, format!("{write}/{compare}")))
         }
     }
     None

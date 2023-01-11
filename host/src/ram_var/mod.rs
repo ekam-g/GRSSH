@@ -61,7 +61,7 @@ impl HostData {
             if let Ok(data) = check {
                 return data;
             }
-            debug!("dead lock problem");
+            error!("dead lock problem");
         }
     }
     pub fn get_client() -> Client {
@@ -70,7 +70,7 @@ impl HostData {
             if let Ok(data) = check {
                 return data.clone();
             }
-            debug!("dead lock problem");
+            error!("dead lock problem");
         }
     }
 }
