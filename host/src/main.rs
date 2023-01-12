@@ -17,3 +17,4 @@ fn main() {
     let _panic_watcher = enable_sentry();
     host_main();
 }
+
