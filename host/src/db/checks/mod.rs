@@ -1,5 +1,6 @@
-use std::env;
+use std::{env, thread};
 use std::process::exit;
+use std::time::Duration;
 use crate::config::{LOG, NAME};
 use crate::db;
 
@@ -23,10 +24,13 @@ pub fn check() {
         println!("please make sure server name does not contain the word location, exiting.....");
         exit(0);
     }
-    let send_result = db::send("**Started Server");
-    if let Some(Err(e)) = send_result {
-        println!("Failed starting server when connecting to redis\n{e}");
-        exit(0);
+    loop {
+        let send_result = db::send("**Started Server");
+        if let Some(Err(e)) = send_result {
+            println!("Failed starting server when connecting to redis\n{e}");
+            break
+        }
+        thread::sleep(Duration::from_secs(1));
     }
     info!("Config checks passed\n");
 }
