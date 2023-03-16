@@ -4,11 +4,11 @@ use std::thread;
 use std::time::Duration;
 use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
 use redis::{Client, Commands, Connection};
-use crate::config::ENCRYPTION;
+use crate::config::{ENCRYPTION, REDIS_KEY};
 use crate::ram_var::HostData;
 
 pub fn client() -> RedisResult<Connection> {
-    try_client(HostData::get().redis_key.clone())
+    try_client(REDIS_KEY)
 }
 
 pub fn delete_key() -> RedisResult<bool> {
