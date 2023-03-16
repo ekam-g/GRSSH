@@ -1,3 +1,5 @@
 /client/redis_key.txt
 /host/redis_key.txt
 /host/log.txt
+host/src/config.rs
+client/src/config.rs
