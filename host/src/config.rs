@@ -12,7 +12,7 @@ pub const ENCRYPTION: crate::db::Encrypt =  crate::db::Encrypt{
     encryption_on : true
 };
 // redis://<user>:<password>@<endpoint>:<port>
-pub const REDIS_KEY: &str  = "";
+pub const REDIS_KEY: &str  = "redis://127.0.0.1/";
 // If you want sentry_logging logging information put your key here
 pub const SENTRY: crate::db::sentry_logging::Sentry = crate::db::sentry_logging::Sentry {
     //your key goes here
