@@ -11,7 +11,7 @@ pub const ENCRYPTION: crate::db::Encrypt =  crate::db::Encrypt{
     //if you want encryption
     encryption_on : true
 };
-// {uri_scheme}://:{redis_password}@{redis_host_name}
+// redis://<user>:<password>@<endpoint>:<port>
 pub const REDIS_KEY: &str  = "";
 // If you want sentry_logging logging information put your key here
 pub const SENTRY: crate::db::sentry_logging::Sentry = crate::db::sentry_logging::Sentry {

@@ -34,7 +34,7 @@ pub fn path() -> String {
     format!("{NAME}location")
 }
 
-pub fn get_path(redis_location: String) -> Vec<String> {
+pub fn get_path(redis_location: &str) -> Vec<String> {
     let mut return_val: Vec<String> = vec![];
     let mut err: i8 = 0;
     loop {

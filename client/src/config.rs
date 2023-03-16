@@ -1,4 +1,4 @@
-// {uri_scheme}://:{redis_password}@{redis_host_name}
+// redis://<user>:<password>@<endpoint>:<port>
 pub const REDIS_KEY: &str  = "";
 //encryption settings
 pub const ENCRYPTION: crate::db::Encrypt =  crate::db::Encrypt{
