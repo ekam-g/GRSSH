@@ -6,7 +6,6 @@ use crate::config::REDIS_KEY;
 use crate::db::make_client;
 
 pub struct HostData {
-    pub data: String,
     pub kill_thread: bool,
     pub location: Vec<String>,
     pub last_working_location: Vec<String>,
@@ -19,7 +18,6 @@ pub static HOST_VAR: Lazy<Mutex<HostData>> = Lazy::new(|| {
         _location
     };
     Mutex::new(HostData {
-        data: String::new(),
         kill_thread: false,
         location: location.clone(),
         last_working_location: location,

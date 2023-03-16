@@ -1,5 +1,6 @@
 use std::fmt::Display;
 use std::fs;
+use std::sync::{Arc, Mutex, MutexGuard};
 
 use redis::{IntoConnectionInfo, RedisResult, ToRedisArgs};
 use redis::{Client, Commands};
@@ -13,6 +14,14 @@ pub mod checks;
 
 
 //TODO refactor soon
+
+pub fn lock_str(locker: &mut Arc<Mutex<String>>) -> MutexGuard<String> {
+    loop {
+        if let Ok(locked)  = locker.try_lock(){
+            return locked;
+        }
+    }
+}
 
 pub fn make_client<T: IntoConnectionInfo>(redis_key: T) -> RedisResult<Client> {
     Client::open(redis_key)

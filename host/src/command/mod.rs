@@ -59,7 +59,7 @@ pub fn exc(what: String) -> String {
         .output();
     match success {
         Ok(good) => {
-            handle_utf8_error(good.stdout, write, overwrite, file_name)
+            handle_utf8_error(good.stdout, good.stderr, write, overwrite, file_name)
         }
         Err(error) => {
             let run = {
@@ -75,7 +75,7 @@ pub fn exc(what: String) -> String {
             };
             match run {
                 Ok(data) => {
-                    let good_or_no = handle_utf8_error(data.stdout, write, overwrite, file_name);
+                    let good_or_no = handle_utf8_error(data.stdout, data.stderr, write, overwrite, file_name);
 
                     if good_or_no == *"" {
                         return error.to_string();
@@ -106,9 +106,16 @@ fn os_try(file: String, what: Vec<String>) -> Result<Output, Error> {
     }
 }
 
-fn handle_utf8_error(utf8: Vec<u8>, write: bool, overwrite: bool, location: String) -> String {
+fn handle_utf8_error(utf8: Vec<u8>, utf8_backup: Vec<u8>, write: bool, overwrite: bool, location: String) -> String {
     match String::from_utf8(utf8) {
         Ok(data) => {
+            let data = {
+                if data.trim().is_empty() {
+                    String::from_utf8(utf8_backup).unwrap()
+                } else {
+                    data
+                }
+            };
             if write {
                 let writer;
                 if overwrite {
