@@ -4,8 +4,6 @@ pub const SHELL: &str = "zsh";
 pub const LOG: bool = true;
 //public name of the server
 pub const NAME: &str = "mac";
-//redis key stored in file
-pub const LOCATION_TO_REDIS_KEY: &str = "redis_key.txt";
 //encryption settings
 pub const ENCRYPTION: crate::db::Encrypt =  crate::db::Encrypt{
     //your encryption key
@@ -13,6 +11,8 @@ pub const ENCRYPTION: crate::db::Encrypt =  crate::db::Encrypt{
     //if you want encryption
     encryption_on : true
 };
+// {uri_scheme}://:{redis_password}@{redis_host_name}
+pub const REDIS_KEY: &str  = "";
 // If you want sentry_logging logging information put your key here
 pub const SENTRY: crate::db::sentry_logging::Sentry = crate::db::sentry_logging::Sentry {
     //your key goes here
